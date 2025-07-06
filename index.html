@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Linux+ XK0-005 Practice Test</title>
-  <link rel="manifest" href="manifest.json" />
+  <link rel="manifest" href="manifest.json"/>
   <style>
     body { font-family: sans-serif; margin: 2rem; background: #f7f7f7; }
     .quiz-container { max-width: 800px; margin: auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
@@ -32,11 +33,17 @@
 
   <script>
     const questions = [{
-      question: "Sample Question: What does DNS stand for?",
-      choices: { A: "Dynamic Name Server", B: "Domain Name System", C: "Digital Network Service", D: "Distributed Node Service" },
-      answer: "B",
-      explanation: "DNS stands for Domain Name System, which translates domain names to IP addresses."
-    }];
+  question: "What does DNS stand for?",
+  choices: {
+    A: "Dynamic Network System",
+    B: "Domain Name System",
+    C: "Digital Node Service",
+    D: "Distributed Name Service"
+  },
+  answer: "B",
+  explanation: "DNS stands for Domain Name System. It translates domain names to IP addresses."
+}];
+
     let current = 0;
     let score = 0;
     let answered = false;
