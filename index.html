@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Linux+ XK0-005 Practice Test</title>
+  <style>
+    body { font-family: sans-serif; background: #f4f4f4; margin: 0; padding: 1rem; }
+    .container { max-width: 800px; margin: auto; background: white; padding: 1rem; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .question { margin-bottom: 1.5rem; }
+    .choices label { display: block; margin: 0.3rem 0; cursor: pointer; }
+    .feedback, .explanation { display: none; margin-top: 0.5rem; }
+    .correct { color: green; font-weight: bold; }
+    .wrong { color: red; font-weight: bold; }
+    button { margin-top: 0.5rem; padding: 0.5rem 1rem; font-size: 1rem; }
+    .show-btn { margin-top: 0.5rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Linux+ XK0-005 Practice Test</h1>
+    <div id="quiz"></div>
+  </div>
+  <script>
+    const questions = []; // placeholder for JS-injected 307 questions
+    let current = 0;
+
+    function loadQuestion() {
+      const q = questions[current];
+      const quiz = document.getElementById("quiz");
+      if (!q) {
+        quiz.innerHTML = "<p>Quiz complete! Refresh to start over.</p>";
+        return;
+      }
+      quiz.innerHTML = `
+        <div class="question">
+          <strong>Q${current + 1}: ${q.question}</strong>
+          <div class="choices">
+            ${Object.entries(q.choices).map(([key, val]) => `
+              <label>
+                <input type="radio" name="choice" value="${key}" />
+                ${key}: ${val}
+              </label>
+            `).join('')}
+          </div>
+          <div class="feedback" id="feedback"></div>
+          <button onclick="checkAnswer('${q.answer}')">Check Answer</button>
+          <button class="show-btn" onclick="document.getElementById('explain').style.display='block'">Show Explanation</button>
+          <div class="explanation" id="explain">${q.explanation}</div>
+        </div>
+      `;
+    }
+
+    function checkAnswer(correct) {
+      const selected = document.querySelector('input[name="choice"]:checked');
+      const feedback = document.getElementById("feedback");
+      if (!selected) {
+        feedback.innerHTML = "<span class='wrong'>Please select an answer.</span>";
+      } else if (selected.value === correct) {
+        feedback.innerHTML = "<span class='correct'>Correct!</span>";
+      } else {
+        feedback.innerHTML = "<span class='wrong'>Incorrect. Try again or reveal the explanation.</span>";
+      }
+      feedback.style.display = "block";
+    }
+
+    // Load actual questions via script injection (placeholder)
+    fetch("questions.json")
+      .then(res => res.json())
+      .then(data => {
+        questions.push(...data);
+        loadQuestion();
+      });
+  </script>
+</body>
+</html>
