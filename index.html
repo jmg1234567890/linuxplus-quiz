@@ -1,0 +1,115 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Linux+ XK0-005 Practice Test</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    .question-card { border: 1px solid #ccc; border-radius: 10px; padding: 15px; margin-bottom: 20px; }
+    .correct { color: green; }
+    .incorrect { color: red; }
+    .hidden { display: none; }
+    .filter { margin-bottom: 20px; }
+  </style>
+</head>
+<body>
+  <h1>Linux+ XK0-005 Practice Test</h1>
+
+  <div class="filter">
+    <label for="categoryFilter">Filter by Category:</label>
+    <select id="categoryFilter">
+      <option value="All">All</option>
+    </select>
+  </div>
+
+  <div id="quizContainer"></div>
+
+  <script>
+    const questions = [{'question': 'Which command is used to list all files, including hidden ones, in a directory?', 'choices': ['ls -a', 'ls -l', 'dir /h', 'show hidden'], 'correct': 'ls -a', 'explanation': "The 'ls -a' command lists all files including hidden files that start with a dot.", 'category': 'Linux Commands'}, {'question': 'What file contains user account information in Linux?', 'choices': ['/etc/shadow', '/etc/passwd', '/etc/users', '/home/users'], 'correct': '/etc/passwd', 'explanation': 'The /etc/passwd file contains basic user account information.', 'category': 'System Files'}, {'question': 'Which runlevel represents multi-user mode with networking but no GUI?', 'choices': ['3', '5', '1', '0'], 'correct': '3', 'explanation': 'Runlevel 3 provides multi-user mode with networking, without a GUI.', 'category': 'Runlevels'}];
+
+    const quizContainer = document.getElementById('quizContainer');
+    const categoryFilter = document.getElementById('categoryFilter');
+
+    function shuffle(array) {
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      return array;
+    }
+
+    function renderQuestions(filtered = "All") {
+      quizContainer.innerHTML = "";
+      const filteredQuestions = filtered === "All" ? questions : questions.filter(q => q.category === filtered);
+      shuffle(filteredQuestions).forEach((q, index) => {
+        const card = document.createElement('div');
+        card.className = "question-card";
+
+        const qEl = document.createElement('p');
+        qEl.textContent = `${index + 1}. ${q.question}`;
+        card.appendChild(qEl);
+
+        q.choices.forEach(choice => {
+          const label = document.createElement('label');
+          const input = document.createElement('input');
+          input.type = "radio";
+          input.name = `question-${index}`;
+          input.value = choice;
+          input.addEventListener('change', () => {
+            const result = card.querySelector('.result');
+            const showBtn = card.querySelector('.showExplanation');
+            if (choice === q.correct) {
+              result.textContent = "✅ Correct!";
+              result.className = "result correct";
+            } else {
+              result.textContent = `❌ Incorrect.`;
+              result.className = "result incorrect";
+            }
+            showBtn.classList.remove("hidden");
+          });
+          label.appendChild(input);
+          label.append(" " + choice);
+          card.appendChild(label);
+          card.appendChild(document.createElement('br'));
+        });
+
+        const resultDiv = document.createElement('div');
+        resultDiv.className = "result";
+        card.appendChild(resultDiv);
+
+        const showExplanation = document.createElement('button');
+        showExplanation.textContent = "Show explanation for correct answer";
+        showExplanation.className = "showExplanation hidden";
+        showExplanation.addEventListener('click', () => {
+          const exp = document.createElement('p');
+          exp.innerHTML = `<em>Explanation:</em> ${q.explanation}`;
+          card.appendChild(exp);
+          showExplanation.disabled = true;
+        });
+        card.appendChild(showExplanation);
+
+        quizContainer.appendChild(card);
+      });
+    }
+
+    function populateCategories() {
+      const categories = ["All", ...new Set(questions.map(q => q.category))];
+      categories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        categoryFilter.appendChild(opt);
+      });
+    }
+
+    categoryFilter.addEventListener('change', () => {
+      renderQuestions(categoryFilter.value);
+    });
+
+    populateCategories();
+    renderQuestions();
+  </script>
+</body>
+</html>
