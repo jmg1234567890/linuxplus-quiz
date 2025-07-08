@@ -1,0 +1,37 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Linux+ XK0-005 Full Practice Test</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body { font-family: sans-serif; padding: 1em; line-height: 1.6; }
+    .question { margin-bottom: 2em; border-bottom: 1px solid #ccc; padding-bottom: 1em; }
+    .choices label { display: block; margin: 0.25em 0; }
+    button { margin-top: 0.5em; }
+    .correct { color: green; }
+    .explanation { margin-top: 0.5em; font-style: italic; color: #444; display: none; }
+  </style>
+  <script>
+    function toggleExplanation(id) {
+      const el = document.getElementById('exp-' + id);
+      el.style.display = (el.style.display === 'none') ? 'block' : 'none';
+    }
+  </script>
+</head>
+<body>
+<h1>Linux+ XK0-005 Practice Test (All 307 Questions)</h1>
+
+<div class="question">
+  <div><strong>Question 1:</strong> What is the purpose of the /etc/passwd file in Linux?</div>
+  <div class="choices">
+    <label><input type="radio" name="q1"> A. Stores user passwords in plaintext</label>
+    <label><input type="radio" name="q1"> B. Contains user account information</label>
+    <label><input type="radio" name="q1"> C. Manages system boot scripts</label>
+    <label><input type="radio" name="q1"> D. Hosts the system kernel</label>
+  </div>
+  <button onclick="toggleExplanation('1')">Show explanation for correct answer</button>
+  <div class="explanation" id="exp-1">Answer: B — /etc/passwd contains user account information like username, UID, GID, shell, and home directory.</div>
+</div>
+</body></html>
