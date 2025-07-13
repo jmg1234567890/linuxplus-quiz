@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Linux+ XK0-005 Practice Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px; }
+    h1, h2 { text-align: center; }
+    .question { background: white; padding: 15px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    .choices label { display: block; margin-bottom: 8px; }
+    .controls { text-align: center; margin-bottom: 20px; }
+    .feedback { margin-top: 10px; font-weight: bold; }
+    .correct { color: green; }
+    .incorrect { color: red; }
+    .explanation { margin-top: 10px; font-style: italic; color: #555; display: none; }
+    .progress-container { width: 100%; background: #eee; border-radius: 8px; overflow: hidden; margin: 20px 0; }
+    .progress-bar { width: 0; height: 20px; background: #4caf50; }
+    .timer { font-size: 1.1em; color: #333; }
+  </style>
+</head>
+<body>
+  <h1>Linux+ XK0-005 Practice Quiz</h1>
+  <div class="controls">
+    <button onclick="startQuiz(90)">Start 90-Question Quiz</button>
+    <button onclick="startQuiz(307)">Start Full 307-Question Quiz</button><br><br>
+    <label><input type="checkbox" id="toggle-timer" checked> Show Timer</label>
+    <div id="score-display"></div>
+    <div class="timer" id="timer-display"></div>
+    <div class="progress-container"><div class="progress-bar" id="progress-bar"></div></div>
+  </div>
+  <div id="quiz"></div>
+  <script>
+    const allQuestions = [
+  {
+    "question": "A systems engineer is adding a new 1GB XFS filesystem that should be temporarily mounted under /ops/app. Which of the following is the correct list of commands to achieve this goal? A. The list of commands in option D is the correct way to achieve the goal. The commands are as follows: fallocate -l 1G /ops/app.img creates a 1GB file named app.img under the /ops directory. mkfs.xfs /ops/app.img formats the file as an XFS filesystem. mount -o loop /ops/app.img /ops/app mounts the file as a loop device under the /ops/app directory. The other options are incorrect because they either use the wrong commands (dd or truncate instead of fallocate), the wrong options (-t or -f instead of -o), or the wrong order of arguments (/ops/app.img /ops/app instead of /ops/app /ops/app.img). Reference: CompTIA Linux+ (XK0-005) Certification Study Guide, Chapter 10: Managing Storage, pages 323-324.",
+    "choices": [
+      "",
+      "",
+      ""
+    ],
+    "correct": [
+      3
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A junior administrator is setting up a new Linux server that is intended to be used as a router at a remote site. Which of the following parameters will accomplish this goal? The parameter net.ipv4.ip_forward=1 will accomplish the goal of setting up a new Linux server as a router. This parameter enables the IP forwarding feature, which allows the server to forward packets between different network interfaces. This is necessary for a router to route traffic between different networks. The parameter can be set in the /etc/sysctl.conf file or by using the sysctl command. This is the correct parameter to use to accomplish the goal. The other options are incorrect because they either do not exist (net.ipv4.ip_forwarding or net.ipv4.ip_route) or do not enable IP forwarding (net.ipv4.ip_forward=0). Reference: CompTIA Linux+ (XK0-005) Certification Study Guide, Chapter 12: Managing Network Connections, page 382.",
+    "choices": [
+      "",
+      "",
+      "",
+      ""
+    ],
+    "correct": [
+      2
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "Some servers in an organization have been compromised. Users are unable to access to the organizations web page and other services. While reviewing the system log, a systems administrator notices messages from the kernel regarding firewall rules: Which of the following commands will remediate and help resolve the issue? A. The command iptables -F will remediate and help resolve the issue. The issue is caused by the firewall rules that block the access to the organizations web page and other services. The output of dmesg | grep firewall shows that the kernel has dropped packets from the source IP address 192.168.1.100 to the destination port 80, which is the default port for HTTP. The command iptables - F will flush all the firewall rules and allow the traffic to pass through. This command will resolve the issue and restore the access to the web page and other services. The other options are incorrect because they either do not affect the firewall rules (ip route flush or ip addr flush) or do not exist (iptables -R). Reference: CompTIA Linux+ (XK0-005) Certification Study Guide, Chapter 18: Securing Linux Systems, page 543.",
+    "choices": [
+      "",
+      "",
+      ""
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "An administrator started a long-running process in the foreground that needs to continue without interruption. Which of the following keystrokes should the administrator use to continue running the process in the background? A long-running process is a program that takes a long time to complete or runs indefinitely on a Linux system. A foreground process is a process that runs in the current terminal and receives input from the keyboard and output to the screen. A background process is a process that runs in the background and does not interact with the terminal. A background process can continue running even if the terminal is closed or disconnected. To start a long-running process in the background, the user can append an ampersand (&) to the command, such as someapp &. This will run someapp in the background and return control to the terminal immediately. To move a long-running process from the foreground to the background, the user can use two keystrokes: Ctrl+Z and bg. The Ctrl+Z keystroke will suspend (pause) the foreground process and return control to the terminal. The bg keystroke will resume (continue) the suspended process in the background and detach it from the terminal. The statement B is correct. The statements A, C, and D are incorrect because they do not perform the desired task. The bg keystroke alone will not work unless there is a suspended process to resume. The Ctrl+B keystroke will not suspend the foreground process, but rather move one character backward in some applications. The jobs keystroke will list all processes associated with the current terminal. The bg & keystroke will cause an error because bg does not take any arguments. Reference: [How to Run Linux Processes in Background]",
+    "choices": [
+      "<Ctrl+z> bg",
+      "<Ctrl+d> bg",
+      "<Ctrl+b> jobs -1",
+      "<Ctrl+h> bg &"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "Which of the following would significantly help to reduce data loss if more than one drive fails at the same time? RAID stands for Redundant Array of Independent Disks, which is a technology that combines multiple physical disks into a logical unit that provides improved performance, reliability, or both. RAID can significantly help to reduce data loss if more than one drive fails at the same time, depending on the RAID level used. For example, RAID 1 (mirroring) duplicates the data on two or more disks, so that if one disk fails, the data can be recovered from another disk. RAID 5 (striping with parity) distributes the data and parity information across three or more disks, so that if one disk fails, the data can be reconstructed from the remaining disks. RAID 6 (striping with double parity) extends RAID 5 by adding another parity block, so that if two disks fail, the data can still be recovered from the remaining disks. Reference: [What is RAID?]",
+    "choices": [
+      "Server clustering",
+      "Load balancing",
+      "RAID",
+      "VDI"
+    ],
+    "correct": [
+      2
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A systems administrator is investigating a service that is not starting up. Given the following information: Which of the following systemd commands should the administrator use in order to obtain more details about the failing service? The systemd is a system and service manager for Linux systems that provides a standard way to control and monitor system services. The systemd uses various commands and tools to manage and troubleshoot system services, such as systemct1, sysctl, and journalctl. The systemct1 command is used to start, stop, enable, disable, restart, reload, status, and list system services. The sysctl command is used to configure kernel parameters at runtime. The journalctl command is used to view and filter the logs of system services. To investigate a service that is not starting up, the administrator can use the journalctl command with the -xu option. The -x option enables verbose output that includes explanatory text and priority information. The -u option filters the output by a specific unit name, such as network.service. Therefore, the command journalctl -xu network will show detailed logs of the network service, which can help identify the cause of the failure. The statement D is correct. The statements A, B, and C are incorrect because they do not provide more details about the failing service. The systemct1 analyze network command does not exist. The systemct1 info network command shows basic information about the network unit, such as description, load state, active state, sub state, and main PID. The sysctl -a network command shows all kernel parameters related to network settings. Reference: [How to Use Systemd to Manage System Services]",
+    "choices": [
+      "systemct1 analyze network",
+      "systemct1 info network",
+      "sysctl -a network",
+      "journalctl -xu network"
+    ],
+    "correct": [
+      3
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A systems administrator is adding a Linux-based server and removing a Windows-based server from a cloud-based environment. The changes need to be validated before they are applied to the cloudbased environment. Which of the following tools should be used to meet this requirement? Terraform is a tool for building, changing, and managing infrastructure as code in a cloud-based environment. Terraform uses configuration files to describe the desired state of the infrastructure and applies changes accordingly. Terraform supports various cloud providers, such as AWS, Azure, Google Cloud Platform, and more. To validate changes before they are applied to the cloud-based environment, the administrator can use the terraform plan command. This command will compare the current state of the infrastructure with the desired state defined in the configuration files and show what actions will be performed to achieve the desired state. This command will not make any changes to the infrastructure but only show a plan of changes. The statement D is correct. The statements A, B, and C are incorrect because they do not validate changes before they are applied to the cloud-based environment. Ansible is another tool for automating infrastructure management, but it does not have a plan command. Git clone and git pull are commands for working with git repositories, which are used for version control of code. Reference: [How to Use Terraform to Manage Cloud Infrastructure]",
+    "choices": [
+      "Ansible",
+      "git clone",
+      "git pull",
+      "terraform plan"
+    ],
+    "correct": [
+      3
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A Linux administrator needs to create a symlink for /usr/local/bin/app-a, which was installed in /usr/local/share/appa. Which of the following commands should the administrator use? To create a symlink for /usr/local/bin/app-a, which was installed in /usr/local/share/app-a, the administrator can use the command ln -s /usr/local/share/app-a /usr/local/bin/app-a (A). This will create a symbolic link named /usr/local/bin/app-a that points to the original file /usr/local/share/app-a. The other commands will not create a symlink, but either move, copy, or synchronize the file. Reference: [CompTIA Linux+ Study Guide], Chapter 3: Working with Files, Section: Creating Links [How to Create Symbolic Links in Linux]",
+    "choices": [
+      "In -s /usr/local/bin/app-a /usr/local/share/app-a",
+      "mv -f /usr/local/share/app-a /usr/local/bin/app-a",
+      "cp -f /usr/local/share/app-a /usr/local/bin/app-a"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "The group named support is unable to make changes to the config file. An administrator is reviewing the permissions and sees the following: S Is -1 config -rw-rw----. 1 root app 4682 02-15 11:25 config Which of the following should the administrator execute in order to give the support group access to modify the file while preserving the current ownership? To give the support group access to modify the config file while preserving the current ownership, the administrator can execute the command chmod 664 config \u00c2\u00a9. This will change the permissions of the config file to read and write for the owner and group, and read only for others. The owner and group of the file will remain as root and app respectively. The other commands will not achieve this task, but either change the group ownership, set an access control list, or set a setgid bit. Reference: [CompTIA Linux+ Study Guide], Chapter 3: Working with Files, Section: Changing File Permissions [How to Use chmod Command in Linux]",
+    "choices": [
+      "chown :support config",
+      "setfacl -m g:support:rw- config",
+      "chmod 664 config",
+      "chmod g+s config"
+    ],
+    "correct": [
+      2
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A systems administrator receives reports that several virtual machines in a host are responding slower than expected. Upon further investigation, the administrator obtains the following output from one of the affected systems: Which of the following best explains the reported issue? Based on the output from one of the affected systems, the best explanation for the reported issue is that the virtual machine is running out of CPU resources, leading to users experiencing longer response times (D). The output shows that the system use percentage is very high (57.85%), indicating that the virtual machine is using most of its CPU cycles for system processes. This leaves little CPU time for user processes, which results in slower performance. The other explanations are not supported by the output or are contradictory. Reference: [CompTIA Linux+ Study Guide], Chapter 8: Optimizing Linux Performance, Section: Monitoring CPU Usage [How to Interpret CPU Usage Statistics]",
+    "choices": [
+      "The physical host is running out of CPU resources, leading to insufficient CPU time being allocated to virtual machines.",
+      "The physical host has enough CPU cores, leading to users running more processes to compensate for the slower response times.",
+      "The virtual machine has enough CPU cycles, leading to the system use percentage being higher than expected.",
+      "The virtual machine is running out of CPU resources, leading to users experiencing longer response times."
+    ],
+    "correct": [
+      3
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A cloud engineer wants to delete all unused networks that are not referenced by any container. Which of the following commands will achieve this goal? The docker command is used to manage Docker containers, images, networks, volumes, and other resources on a Linux system. Docker is a platform that allows users to run applications in isolated environments called containers. Docker also provides networking features that allow users to create and manage networks for containers. To delete all unused networks that are not referenced by any container, the cloud engineer can use the docker network prune command. This command will remove all networks that have no containers connected to them. The statement C is correct. The statements A, B, and D are incorrect because they do not delete all unused networks. The docker network erase and docker network clear commands do not exist. The docker network rm command deletes a specific network by name or ID, but not all unused networks. Reference: [How to Manage Docker Networks]",
+    "choices": [
+      "docker network erase",
+      "docker network clear",
+      "docker network prune"
+    ],
+    "correct": [
+      2
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A systems administrator wants to permit access temporarily to an application running on port 1234/TCP on a Linux server. Which of the following commands will permit this traffic? The firewall-cmd command is used to manage firewalld, which is a firewall service for Linux systems that provides dynamic and persistent configuration of firewall rules. Firewalld uses zones and services to define different levels of trust and access for network connections. To permit access temporarily to an application running on port 1234/TCP on a Linux server, the systems administrator can use the firewall-cmd --add-port=1234/tcp command. This command will add a rule to the default zone (usually public) that allows incoming traffic on port 1234/TCP. The rule will only be effective until the next reload or restart of firewalld. To make the rule permanent, the administrator can add the --permanent option to the command. The statement C is correct. The statements A, B, and D are incorrect because they do not permit access to port 1234/TCP. The firewall-cmd --new-service=1234/tcp command does not exist. The firewall-cmd --service=1234 - -protocol=tcp command does not work because 1234 is not a predefined service name in firewalld. The firewall-cmd --add-whitelist-uid=1234 command does not exist. Reference: [How to Use FirewallD to Manage Firewall in Linux]",
+    "choices": [
+      "firewall-cmd \u201dnew-service=1234/tcp",
+      "firewall-cmd \u201dservice=1234 \u201dprotocol=tcp",
+      "firewall-cmd \u201dadd\u201dport=1234/tcp"
+    ],
+    "correct": [
+      2
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "The development team wants to prevent a file from being modified by all users in a Linux system, including the root account. Which of the following commands can be used to accomplish this objective? The chattr command is used to change file attributes on Linux systems that support extended attributes, such as ext2, ext3, ext4, btrfs, xfs, and others. File attributes are flags that modify the behavior of files and directories. To prevent a file from being modified by all users in a Linux system, including the root account, the development team can use the chattr +i /app/conf/file command. This command will set the immutable attribute (+i) on the file /app/conf/file, which means that the file cannot be deleted, renamed, linked, appended, or written to by any user or process. To remove the immutable attribute, the development team can use the chattr -i /app/conf/file command. The statement C is correct. The statements A, B, and D are incorrect because they do not prevent the file from being modified by all users. The chmod /app/conf/file command does not work because it requires an argument to specify the permissions to change. The setenforce /app/conf/file command does not work because it is used to change the SELinux mode, not file attributes. The chmod 0000 /app/conf/file command will remove all permissions from the file, but it can still be modified by the root account. Reference: [How to Use chattr Command in Linux]",
+    "choices": [
+      "chmod / app/conf/file",
+      "setenforce / app/ conf/ file",
+      "chattr +i /app/conf/file"
+    ],
+    "correct": [
+      2
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "An administrator would like to securely connect to a server and forward port 8080 on a local machine to port 80 on the server. Which of the following commands should the administrator use to satisfy both requirements? This command will create a local port forwarding, which means that connections from the SSH client are forwarded via the SSH server, then to a destination server. In this case, the destination server is the same as the SSH server (localhost), and the destination port is 80. The SSH client will listen on port 8080 on the local machine, and any connection to that port will be forwarded to port 80 on the server. This way, the administrator can securely access the web service running on port 80 on the server by using  on the local machine. The other options are incorrect because: ssh -R 8080:localhost:80 admin@server This command will create a remote port forwarding, which means that connections from the SSH server are forwarded via the SSH client, then to a destination server. In this case, the destination server is the same as the SSH client (localhost), and the destination port is 80. The SSH server will listen on port 8080 on the remote machine, and any connection to that port will be forwarded to port 80 on the client. This is not what the administrator wants to do. ssh -L 80:localhost:8080 admin@server This command will also create a local port forwarding, but it will use port 80 on the local machine and port 8080 on the server. This is not what the administrator wants to do, and it may also fail if port 80 is already in use by another service on the local machine. ssh -R admin@server This command is incomplete and invalid. It does not specify any port numbers or destination addresses for the remote port forwarding. It will also fail if the SSH server does not allow remote port forwarding. Reference: CompTIA Linux+ Certification Exam Objectives How to Set up SSH Tunneling (Port Forwarding)",
+    "choices": [
+      "ssh \u201dL 8080: localhost:80 admin@server",
+      "ssh \u201dR 8080: localhost:80 admin@server",
+      "ssh \u201dL 80 : localhost:8080 admin@server"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "An administrator needs to make an application change via a script that must be run only in console mode. Which of the following best represents the sequence the administrator should execute to accomplish this task? systemct1 isolate graphical.target systemct1 isolate multi-user.target systemct1 isolate multi-user.target systemct1 isolate graphical.target The correct answer is This sequence will allow the administrator to switch from the graphical mode to the console mode, run the script, and then switch back to the graphical mode. The systemctl command is used to control the systemd system and service manager, which manages the boot targets and services on Linux systems. The isolate subcommand starts the unit specified on the command line and its dependencies and stops all others. The multi-user.target is a boot target that provides a text-based console login, while the graphical.target is a boot target that provides a graphical user interface. By using systemctl isolate, the administrator can change the boot target on the fly without rebooting the system. The sh command is used to run a shell script, which is a file that contains a series of commands that can be executed by the shell. The script.sh is the name of the script that contains the application change that the administrator needs to make. By running sh script.sh, the administrator can execute the script in the console mode. The other options are incorrect because: systemctl isolate graphical.target sh script.sh systemctl isolate multi-user.target This sequence will switch from the console mode to the graphical mode, run the script, and then switch back to the console mode. This is not what the administrator wants to do, as the script must be run only in console mode. sh script.sh systemctl isolate multi-user.target systemctl isolate graphical.target This sequence will run the script in the current mode, which may or may not be console mode, and then switch to console mode and back to graphical mode. This is not what the administrator wants to do, as the script must be run only in console mode. systemctl isolate multi-user.target systemctl isolate graphical.target sh script.sh This sequence will switch from graphical mode to console mode and then back to graphical mode, without running the script at all. This is not what the administrator wants to do, as the script must be run only in console mode. Reference: systemctl(1) - Linux manual page How to switch between the CLI and GUI on a Linux server How to PROPERLY boot into single user mode in RHEL/CentOS 7 Changing Systemd Boot Target in Linux Exit Desktop to Terminal in Ubuntu 19.10",
+    "choices": [
+      "systemct1 isolate multi-user.target sh script.sh",
+      "systemct1 isolate graphical.target sh script.sh",
+      "sh script.sh",
+      "systemct1 isolate multi-user.target systemct1 isolate graphical.target",
+      "systemctl isolate multi-user.target sh script.sh systemctl isolate graphical.target"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "An administrator has source code and needs to rebuild a kernel module. Which of the following command sequences is most commonly used to rebuild this type of module? make install cp cp The best command sequence to rebuild a kernel module from source code is make install. This is the standard way to compile and install a Linux kernel module, as explained in the web search result 5. The other commands are either not relevant, not valid, or not sufficient for this task. For example: wget gcc cp will try to download, compile, and copy a file, but it does not specify the source code, the module name, or the destination directory. tar xvzf build cp will try to extract, build, and copy a compressed file, but it does not specify the file name, the module name, or the destination directory. build install configure will try to run three commands that are not defined or recognized by the Linux shell.",
+    "choices": [
+      "./configure make",
+      "wget gcc",
+      "tar xvzf build",
+      "build install configure",
+      "./configure make"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A new application container was built with an incorrect version number. Which of the following commands should be used to rename the image to match the correct version 2.1.2? The best command to use to rename the image to match the correct version 2.1.2 is comptia/app:2.1.1 comptia/app:2.1.2. This command will create a new tag for the existing image with the new version number, without changing the image content or ID. The other commands are either incorrect or not suitable for this task. For example: docker push comptia/app:2.1.1 comptia/app:2.1.2 will try to push two images to a remote repository, but it does not rename the image locally. docker rmi comptia/app:2.1.1 comptia/app:2.1.2 will try to remove two images from the local system, but it does not rename the image. docker update comptia/app:2.1.1 comptia/app:2.1.2 will try to update the configuration of a running container, but it does not rename the image.",
+    "choices": [
+      "docker tag comptia/app:2.1.1 comptia/app:2.1.2",
+      "docker push comptia/app:2.1.1 comptia/app:2.1.2",
+      "docker rmi comptia/app:2.1.1 comptia/app:2.1.2",
+      "docker tag"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  }
+]
+    let currentQuestions = [];
+    let score = 0;
+    let quizStarted = false;
+    let startTime;
+    let timerInterval;
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function startQuiz(count) {
+      currentQuestions = shuffle(allQuestions).slice(0, count);
+      score = 0;
+      quizStarted = true;
+      renderQuiz();
+      updateScore();
+      startTimer();
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      if (!document.getElementById("toggle-timer").checked) {
+        document.getElementById("timer-display").innerText = "";
+        return;
+      }
+      startTime = Date.now();
+      timerInterval = setInterval(() => {
+        const now = Date.now();
+        const diff = Math.floor((now - startTime) / 1000);
+        const minutes = Math.floor(diff / 60);
+        const seconds = diff % 60;
+        document.getElementById("timer-display").innerText = `⏱️ Time: ${minutes}m ${seconds}s`;
+      }, 1000);
+    }
+
+    function renderQuiz() {
+      const quizDiv = document.getElementById("quiz");
+      quizDiv.innerHTML = "";
+      currentQuestions.forEach((q, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
+
+        const qText = document.createElement("p");
+        qText.innerText = (index + 1) + ". " + q.question;
+
+        const choices = document.createElement("div");
+        choices.className = "choices";
+
+        q.choices.forEach((choice, i) => {
+          const label = document.createElement("label");
+          const input = document.createElement("input");
+          input.type = "checkbox";
+          input.name = "q" + index;
+          input.value = i;
+          label.appendChild(input);
+          label.appendChild(document.createTextNode(" " + choice));
+          choices.appendChild(label);
+        });
+
+        const checkBtn = document.createElement("button");
+        checkBtn.innerText = "Check Answer";
+        checkBtn.onclick = () => {
+          const selected = qDiv.querySelectorAll("input[type=checkbox]:checked");
+          const feedback = qDiv.querySelector(".feedback");
+          const explanation = qDiv.querySelector(".explanation");
+          const correctAnswers = q.correct.sort().toString();
+          const selectedValues = Array.from(selected).map(s => parseInt(s.value)).sort().toString();
+
+          if (selected.length === 0) {
+            feedback.textContent = "❌ Please select at least one answer.";
+            feedback.className = "feedback incorrect";
+          } else if (selectedValues === correctAnswers) {
+            feedback.textContent = "✅ Correct!";
+            feedback.className = "feedback correct";
+            if (!qDiv.dataset.answered) {
+              score++;
+              updateScore();
+              qDiv.dataset.answered = true;
+              updateProgressBar();
+            }
+          } else {
+            feedback.textContent = "❌ Incorrect.";
+            feedback.className = "feedback incorrect";
+          }
+          explanation.style.display = "block";
+        };
+
+        const feedback = document.createElement("div");
+        feedback.className = "feedback";
+
+        const explanation = document.createElement("div");
+        explanation.className = "explanation";
+        explanation.textContent = "💡 Explanation: " + q.explanation;
+
+        qDiv.appendChild(qText);
+        qDiv.appendChild(choices);
+        qDiv.appendChild(checkBtn);
+        qDiv.appendChild(feedback);
+        qDiv.appendChild(explanation);
+        quizDiv.appendChild(qDiv);
+      });
+      updateProgressBar();
+    }
+
+    function updateScore() {
+      document.getElementById("score-display").innerText = "Score: " + score + "/" + currentQuestions.length;
+    }
+
+    function updateProgressBar() {
+      const total = currentQuestions.length;
+      const answered = document.querySelectorAll(".question[data-answered]").length;
+      const progress = (answered / total) * 100;
+      document.getElementById("progress-bar").style.width = progress + "%";
+    }
+  </script>
+</body>
+</html>
