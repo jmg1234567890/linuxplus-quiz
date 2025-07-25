@@ -1,0 +1,136 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Linux+ XK0-005 Practice Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 20px; }
+    .dark-mode { background: #121212; color: #eee; }
+    .question { background: #fff; border-radius: 8px; padding: 15px; margin-bottom: 20px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    .dark-mode .question { background: #1e1e1e; }
+    .controls { margin-bottom: 20px; text-align: center; }
+    .progress-bar-container { height: 20px; background: #ddd; border-radius: 10px; overflow: hidden; margin: 20px 0; }
+    .progress-bar { height: 100%; background: #4caf50; width: 0%; transition: width 0.3s; }
+    .toggle-btns { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+    button { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; }
+    .correct { color: green; font-weight: bold; }
+    .incorrect { color: red; font-weight: bold; }
+    .explanation { font-style: italic; display: none; color: #555; }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <h1>Linux+ XK0-005 Practice Quiz</h1>
+    <div class="toggle-btns">
+      <button onclick="toggleDarkMode()">🌓 Dark Mode</button>
+      <button onclick="toggleStudyMode()">🧠 Study Mode</button>
+    </div>
+    <button onclick="startQuiz(90)">Start 90-Question Quiz</button>
+    <button onclick="startQuiz(307)">Start Full 307-Question Quiz</button><br><br>
+    <label><input type="checkbox" id="toggle-timer" checked> Show Timer</label>
+    <div id="score-display"></div>
+    <div id="timer-display"></div>
+    <div class="progress-bar-container"><div class="progress-bar" id="progress-bar"></div></div>
+  </div>
+
+  <div id="quiz"></div>
+
+  <script>
+    let questions = [{question: "Placeholder for real questions (1/307)", choices: ["A", "B", "C", "D"], correct: [0], explanation: "This is a sample explanation."}];
+    let currentQuestions = [], currentIndex = 0, score = 0, quizStarted = false, timerInterval, seconds = 0;
+    let studyMode = false, wrongAttempts = [];
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    function toggleStudyMode() {
+      studyMode = !studyMode;
+      alert("Study Mode is now " + (studyMode ? "ON" : "OFF"));
+    }
+
+    function startQuiz(count) {
+      quizStarted = true;
+      score = 0;
+      currentIndex = 0;
+      currentQuestions = [...questions].sort(() => 0.5 - Math.random()).slice(0, count);
+      renderQuestion();
+      updateScore();
+      startTimer();
+    }
+
+    function renderQuestion() {
+      const q = currentQuestions[currentIndex];
+      if (!q) return endQuiz();
+      const quizDiv = document.getElementById("quiz");
+      quizDiv.innerHTML = `
+        <div class="question">
+          <p><strong>Q${currentIndex + 1}:</strong> ${q.question}</p>
+          ${q.choices.map((c, i) => `<label><input type="checkbox" name="choice" value="${i}"> ${c}</label>`).join("<br>")}
+          <br><button onclick="checkAnswer()">Check Answer</button>
+          <div class="feedback" id="feedback"></div>
+          <div class="explanation" id="explanation">${q.explanation}</div>
+        </div>
+      `;
+    }
+
+    function checkAnswer() {
+      const q = currentQuestions[currentIndex];
+      const selected = [...document.querySelectorAll("input[name='choice']:checked")].map(i => parseInt(i.value));
+      const feedback = document.getElementById("feedback");
+      const isCorrect = selected.length === q.correct.length && selected.every((v, i) => v === q.correct[i]);
+
+      if (!studyMode) {
+        if (isCorrect) {
+          feedback.textContent = "✅ Correct!";
+          feedback.className = "feedback correct";
+          score++;
+        } else {
+          feedback.textContent = "❌ Incorrect.";
+          feedback.className = "feedback incorrect";
+          wrongAttempts.push(currentIndex);
+        }
+        document.getElementById("explanation").style.display = "block";
+        setTimeout(() => {
+          currentIndex++;
+          renderQuestion();
+          updateScore();
+        }, 1000);
+      } else {
+        currentIndex++;
+        renderQuestion();
+      }
+      updateProgress();
+    }
+
+    function endQuiz() {
+      let final = `<h2>Quiz Complete</h2><p>You scored ${score}/${currentQuestions.length}</p>`;
+      if (studyMode) {
+        final += "<p>Review your answers and explanations.</p>";
+      }
+      document.getElementById("quiz").innerHTML = final;
+    }
+
+    function updateScore() {
+      document.getElementById("score-display").textContent = `Score: ${score}/${currentQuestions.length}`;
+    }
+
+    function startTimer() {
+      seconds = 0;
+      clearInterval(timerInterval);
+      if (!document.getElementById("toggle-timer").checked) return;
+      timerInterval = setInterval(() => {
+        seconds++;
+        document.getElementById("timer-display").textContent = `⏱️ Time: ${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+      }, 1000);
+    }
+
+    function updateProgress() {
+      const percent = ((currentIndex + 1) / currentQuestions.length) * 100;
+      document.getElementById("progress-bar").style.width = percent + "%";
+    }
+  </script>
+</body>
+</html>
