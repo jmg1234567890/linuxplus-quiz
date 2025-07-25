@@ -1,0 +1,296 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Linux+ XK0-005 Practice Quiz</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body { font-family: Arial, sans-serif; background: #f9f9f9; margin: 0; padding: 20px; }
+    .dark-mode { background: #121212; color: #eee; }
+    .question { background: #fff; border-radius: 8px; padding: 15px; margin-bottom: 20px; box-shadow: 0 0 5px rgba(0,0,0,0.1); }
+    .dark-mode .question { background: #1e1e1e; }
+    .controls { margin-bottom: 20px; text-align: center; }
+    .progress-bar-container { height: 20px; background: #ddd; border-radius: 10px; overflow: hidden; margin: 20px 0; }
+    .progress-bar { height: 100%; background: #4caf50; width: 0%; transition: width 0.3s; }
+    .toggle-btns { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
+    button { padding: 10px 15px; border: none; border-radius: 6px; cursor: pointer; }
+    .correct { color: green; font-weight: bold; }
+    .incorrect { color: red; font-weight: bold; }
+    .explanation { font-style: italic; display: none; color: #555; }
+  </style>
+</head>
+<body>
+  <div class="controls">
+    <h1>Linux+ XK0-005 Practice Quiz</h1>
+    <div class="toggle-btns">
+      <button onclick="toggleDarkMode()">🌓 Dark Mode</button>
+      <button onclick="toggleStudyMode()">🧠 Study Mode</button>
+    </div>
+    <button onclick="startQuiz(90)">Start 90-Question Quiz</button>
+    <button onclick="startQuiz(allQuestions.length)">Start Full Quiz</button><br><br>
+    <label><input type="checkbox" id="toggle-timer" checked> Show Timer</label>
+    <div id="score-display"></div>
+    <div id="timer-display"></div>
+    <div class="progress-bar-container"><div class="progress-bar" id="progress-bar"></div></div>
+  </div>
+
+  <div id="quiz"></div>
+
+  <script>
+    const allQuestions = [
+  {
+    "question": "A systems engineer is adding a new 1GB XFS filesystem that should be temporarily mounted under/ops/app. Which of the following is the correct list of commands to achieve this goal? A.",
+    "choices": [
+      "",
+      "",
+      ""
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A junior administrator is setting up a new Linux server that is intended to be used as a router at a remote site. Which of the following parameters will accomplish this goal?",
+    "choices": [
+      "",
+      "",
+      "",
+      ""
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "Some servers in an organization have been compromised. Users are unable to access to the organizations web page and other services. While reviewing the system log, a systems administrator notices messages from the kernel regarding firewall rules:Which of the following commands will remediate and help resolve the issue? A.",
+    "choices": [
+      "",
+      "",
+      ""
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "An administrator started a long-running process in the foreground that needs to continue without interruption. Which of the following keystrokes should the administrator use to continue running the process in the background?",
+    "choices": [
+      "&lt;Ctrl+z&gt; bg",
+      "&lt;Ctrl+d&gt; bg",
+      "&lt;Ctrl+b&gt; jobs -1",
+      "&lt;Ctrl+h&gt; bg &amp;"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "Which of the following would significantly help to reduce data loss if more than one drive fails at the same time?",
+    "choices": [
+      "Server clustering",
+      "Load balancing",
+      "RAID",
+      "VDI"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A systems administrator is investigating a service that is not starting up. Given the following information:Which of the following systemd commands should the administrator use in order to obtain more details about the failing service?",
+    "choices": [
+      "systemct1 analyze network",
+      "systemct1 info network",
+      "sysctl -a network",
+      "journalctl -xu network"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A systems administrator is adding a Linux-based server and removing a Windows-based server froma cloud-based environment. The changes need to be validated before they are applied to the cloudbased environment. Which of the following tools should be used to meet this requirement?",
+    "choices": [
+      "Ansible",
+      "git clone",
+      "git pull",
+      "terraform plan"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "The group named support is unable to make changes to the config file. An administrator is reviewing the permissions and sees the following:S Is -1 config-rw-rw----. 1 root app 4682 02-15 11:25 configWhich of the following should the administrator execute in order to give the support group access to modify the file while preserving the current ownership?",
+    "choices": [
+      "chown :support config",
+      "setfacl -m g:support:rw- config",
+      "chmod 664 config",
+      "chmod g+s config"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A systems administrator receives reports that several virtual machines in a host are responding slower than expected. Upon further investigation, the administrator obtains the following output from one of the affected systems:Which of the following best explains the reported issue?",
+    "choices": [
+      "The physical host is running out of CPU resources, leading to insufficient CPU time being allocated to virtual machines.",
+      "The physical host has enough CPU cores, leading to users running more processes to compensate for the slower response times.",
+      "The virtual machine has enough CPU cycles, leading to the system use percentage being higher than expected.",
+      "The virtual machine is running out of CPU resources, leading to users experiencing longer response times."
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A systems administrator is working on a security report from the Linux servers. Which of the following commands can the administrator use to display all the firewall rules applied to the Linux servers? (Select two).ufw limitiptables \u201dFsystemct1 status firewalldfirewall\u201dcmd \u201d\u201d1ist\u201da11ufw statusiptables \u201dA",
+    "choices": [
+      "iptables -A"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "Users are unable to create new files on the company&#x27;s FTP server, and an administrator is troubleshooting the issue. The administrator runs the following commands:Which of the following is the cause of the issue based on the output above?The users do not have the correct permissions to create files on the FTP server.The ftpusers filesystem does not have enough space.The inodes is at full capacity and would affect file creation for users.ftpusers is mounted as read only.",
+    "choices": [
+      "ftpusers is mounted as read only."
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "A junior systems administrator recently installed an HBA card in one of the servers that is deployed for a production environment. Which of the followingcommands can the administrator use to confirm on which server the card was installed?lspci | egrep &#x27;hba| fibr&#x27;lspci | zgrep &#x27;hba | fibr&#x27;lspci | pgrep &#x27;hba| fibr&#x27;lspci | &#x27;hba | fibr&#x27;",
+    "choices": [
+      ". lspci | egrep \u02dchba| fibr. This command will list all the PCI devices on the server and filter the output for those that match the pattern \u02dchba or \u02dcfibr, which are likely to be related to the HBA card. The egrep command is a variant of grep that supports extended regular expressions, which allow the use of the \u02dc| operator for alternation. The other commands are either invalid or will not produce the desired output. For example:"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  },
+  {
+    "question": "An administrator has source code and needs to rebuild a kernel module. Which of the following command sequences is most commonly used to rebuild thistype of module?",
+    "choices": [
+      "./configure make",
+      "wget gcc",
+      "tar xvzf build",
+      "build install configure",
+      "./configure make"
+    ],
+    "correct": [
+      0
+    ],
+    "explanation": ""
+  }
+];
+    let currentQuestions = [], currentIndex = 0, score = 0, quizStarted = false, timerInterval, seconds = 0;
+    let studyMode = false, wrongAttempts = [];
+
+    function toggleDarkMode() {
+      document.body.classList.toggle("dark-mode");
+    }
+
+    function toggleStudyMode() {
+      studyMode = !studyMode;
+      alert("Study Mode is now " + (studyMode ? "ON" : "OFF"));
+    }
+
+    function startQuiz(count) {
+      quizStarted = true;
+      score = 0;
+      currentIndex = 0;
+      currentQuestions = [...allQuestions].sort(() => 0.5 - Math.random()).slice(0, count);
+      renderQuestion();
+      updateScore();
+      startTimer();
+    }
+
+    function renderQuestion() {
+      const q = currentQuestions[currentIndex];
+      if (!q) return endQuiz();
+      const quizDiv = document.getElementById("quiz");
+      quizDiv.innerHTML = `
+        <div class="question">
+          <p><strong>Q${currentIndex + 1}:</strong> ${q.question}</p>
+          ${q.choices.map((c, i) => `<label><input type="checkbox" name="choice" value="${i}"> ${c}</label>`).join("<br>")}
+          <br><button onclick="checkAnswer()">Check Answer</button>
+          <div class="feedback" id="feedback"></div>
+          <div class="explanation" id="explanation">${q.explanation}</div>
+        </div>
+      `;
+    }
+
+    function checkAnswer() {
+      const q = currentQuestions[currentIndex];
+      const selected = [...document.querySelectorAll("input[name='choice']:checked")].map(i => parseInt(i.value));
+      const feedback = document.getElementById("feedback");
+      const isCorrect = selected.length === q.correct.length && selected.every((v, i) => v === q.correct[i]);
+
+      if (!studyMode) {
+        if (isCorrect) {
+          feedback.textContent = "✅ Correct!";
+          feedback.className = "feedback correct";
+          score++;
+        } else {
+          feedback.textContent = "❌ Incorrect.";
+          feedback.className = "feedback incorrect";
+          wrongAttempts.push(currentIndex);
+        }
+        document.getElementById("explanation").style.display = "block";
+        setTimeout(() => {
+          currentIndex++;
+          renderQuestion();
+          updateScore();
+        }, 1000);
+      } else {
+        currentIndex++;
+        renderQuestion();
+      }
+      updateProgress();
+    }
+
+    function endQuiz() {
+      let final = `<h2>Quiz Complete</h2><p>You scored ${score}/${currentQuestions.length}</p>`;
+      if (studyMode) {
+        final += "<p>Review your answers and explanations.</p>";
+      }
+      document.getElementById("quiz").innerHTML = final;
+    }
+
+    function updateScore() {
+      document.getElementById("score-display").textContent = `Score: ${score}/${currentQuestions.length}`;
+    }
+
+    function startTimer() {
+      seconds = 0;
+      clearInterval(timerInterval);
+      if (!document.getElementById("toggle-timer").checked) return;
+      timerInterval = setInterval(() => {
+        seconds++;
+        document.getElementById("timer-display").textContent = `⏱️ Time: ${Math.floor(seconds / 60)}m ${seconds % 60}s`;
+      }, 1000);
+    }
+
+    function updateProgress() {
+      const percent = ((currentIndex + 1) / currentQuestions.length) * 100;
+      document.getElementById("progress-bar").style.width = percent + "%";
+    }
+  </script>
+</body>
+</html>
