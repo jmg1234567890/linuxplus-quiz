@@ -1,0 +1,32 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Linux+ XK0-005 Final Exam</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Linux+ XK0-005 Final Real Exam</h1>
+  <div id="start-buttons">
+    <button onclick="startQuiz(90)">🧪 Start 90-Question Quiz</button>
+    <button onclick="startQuiz(allQuestions.length)">📚 Start Full Exam</button>
+    <label><input type="checkbox" id="studyMode"> Study Mode</label>
+    <button onclick="toggleDark()">🌙 Toggle Dark Mode</button>
+  </div>
+  <div id="quiz-container"></div>
+  <div id="nav-buttons" style="display:none;">
+    <button onclick="prevQuestion()">⏮ Prev</button>
+    <button onclick="nextQuestion()">Next ⏭</button>
+    <button onclick="checkAnswer()">✅ Check Answer</button>
+    <button onclick="finishQuiz()">🏁 Finish</button>
+  </div>
+  <div>
+    <p>Question <span id="qNumber"></span> of <span id="qTotal"></span> | ⏱ <span id="timer">0m 0s</span> | Score: <span id="score">0</span></p>
+    <p id="feedback" style="font-weight:bold;"></p>
+  </div>
+  <div id="review-section"></div>
+  <script src="questions.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
