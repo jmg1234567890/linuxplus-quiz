@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Linux+ XK0‑005A — TotalTester‑style Simulator (Expanded)</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#121820; --panel-2:#11161e; --text:#e8eef7; --muted:#9eb0c6; --brand:#4ea1ff; --ok:#2ecc71; --bad:#ff4d4f; --warn:#f5a623;
+    --shadow:0 10px 35px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(120deg,#0b0f14,#0e1420);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+  .wrap{max-width:1100px;margin:32px auto;padding:0 20px}
+  header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .title{font-weight:800;letter-spacing:.3px}
+  .badge{padding:4px 10px;border-radius:999px;background:var(--panel);color:var(--muted);border:1px solid #223146}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid #1b2636;border-radius:16px;box-shadow:var(--shadow)}
+  .card.pad{padding:20px}
+  .row{display:flex;gap:16px;flex-wrap:wrap}
+  .grow{flex:1 1 360px}
+  .btn{appearance:none;border:1px solid #23405e;background:#142132;color:#d9e7ff;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:700;letter-spacing:.2px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .btn:hover{filter:brightness(1.08)}
+  .btn.primary{background:linear-gradient(180deg,#1a67ff,#154ee0);border-color:#1a56e6}
+  .btn.good{background:linear-gradient(180deg,#10b981,#0ea371);border-color:#0e986a}
+  .btn.warn{background:linear-gradient(180deg,#f59e0b,#e08a0e);border-color:#e38709;color:#101}
+  .btn.danger{background:linear-gradient(180deg,#ef4444,#d93030);border-color:#c02626}
+  .muted{color:var(--muted)}
+  .bar{height:10px;background:#1b293c;border-radius:999px;overflow:hidden}
+  .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#35a2ff,#53e0ff)}
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px}
+  .kpi{padding:12px;border-radius:12px;background:#0f151f;border:1px solid #1b2636;text-align:center}
+  .kpi .h{font-size:13px;color:#a9bed6}
+  .kpi .v{font-size:22px;font-weight:800}
+  .qstem{font-size:20px;font-weight:700;margin:6px 0 12px}
+  .answers{display:grid;gap:10px}
+  .opt{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #203047;border-radius:12px;background:#0e1520;cursor:pointer}
+  .opt input{margin-top:3px}
+  .opt.correct{border-color:#15803d;background:#0e1a14}
+  .opt.incorrect{border-color:#b91c1c;background:#1a0e0e}
+  .explain{margin-top:12px;padding:12px;border:1px dashed #2a3c58;border-radius:12px;background:#0f1724}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;border:1px solid #25364f;background:#0d1522}
+  .right{margin-left:auto}
+  .hidden{display:none}
+  .small{font-size:13px}
+  .center{display:flex;align-items:center;justify-content:center}
+  .drag-area{display:flex;gap:12px;flex-wrap:wrap;margin:8px 0}
+  .token{padding:6px 10px;border:1px solid #29425e;border-radius:10px;background:#0f2236;cursor:grab}
+  .drop{min-width:160px;min-height:36px;padding:6px 10px;border:2px dashed #2a4b72;border-radius:10px;background:#0b1726}
+  .drop.filled{border-style:solid}
+  .table{width:100%;border-collapse:separate;border-spacing:0 8px}
+  .table td,.table th{padding:10px 12px;background:#0f1724;border:1px solid #1c2a40}
+  .table th{background:#0c1220;color:#a6c1e3}
+  .flex{display:flex;gap:10px;align-items:center}
+  .switch{position:relative;width:46px;height:26px;background:#1c2a36;border-radius:40px;border:1px solid #223146;cursor:pointer}
+  .switch i{position:absolute;top:2px;left:2px;width:22px;height:22px;background:#e1efff;border-radius:50%;transition:transform .2s}
+  .switch.on{background:#1b3d6a}
+  .switch.on i{transform:translateX(20px)}
+  a.download{color:#9bd1ff}
+  @media (max-width:720px){.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">Linux+ XK0‑005A • TotalTester‑style Simulator (Expanded)</div>
+    <div class="badge" id="resumeBadge" title="Autosaves after every action.">Save & Resume Enabled</div>
+  </header>
+
+  <section id="screenStart" class="card pad">
+    <div class="row">
+      <div class="grow">
+        <h2>Choose a mode</h2>
+        <p class="muted">This simulator mimics the flow and feel of TotalTester while using original, exam‑objective‑aligned questions (no NDA content).</p>
+        <div class="controls">
+          <button class="btn primary" onclick="startExam('full')">📚 Start Full Bank</button>
+          <button class="btn primary" onclick="startExam('90')">🧪 Start 90‑Question Exam</button>
+          <button class="btn" onclick="startExam('practice')">🔁 Practice (untimed, navigate freely)</button>
+        </div>
+        <div class="controls" style="margin-top:8px">
+          <label class="pill"><input type="number" id="minutes" min="10" max="240" step="5" value="90" style="width:72px;background:transparent;color:var(--text);border:0;outline:none"> minutes</label>
+          <label class="pill flex">Study mode
+            <span class="switch" id="studyToggle" onclick="toggleStudy()"><i></i></span>
+          </label>
+          <label class="pill flex">Shuffle questions
+            <span class="switch on" id="shuffleToggle" onclick="toggleShuffle()"><i></i></span>
+          </label>
+          <button class="btn" onclick="clearSave()">🗑️ Clear saved progress</button>
+          <a class="btn" href="#" onclick="downloadState()">💾 Export progress</a>
+          <label class="btn" for="importState">📥 Import</label>
+          <input class="hidden" id="importState" type="file" accept="application/json" onchange="importState(this.files[0])" />
+        </div>
+        <p class="small muted">Tip: Use Full Bank for study, then 90‑Question Exam for test‑like practice.</p>
+      </div>
+      <div class="grow card pad">
+        <h3>Your last session</h3>
+        <div id="resumeInfo" class="muted">No prior save found.</div>
+        <div class="controls">
+          <button id="btnResume" class="btn good hidden" onclick="resumeFromSave()">▶️ Resume where you left off</button>
+        </div>
+        <hr style="border:0;border-top:1px solid #1c2a40;margin:12px 0">
+        <div class="kpis" id="bankStats"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screenExam" class="card pad hidden">
+    <div class="row" style="align-items:flex-start">
+      <div class="grow">
+        <div class="row" style="align-items:center">
+          <div class="pill">Question <b id="qNum">1</b>/<span id="qTotal">0</span></div>
+          <div class="pill">Flagged: <span id="flagCount">0</span></div>
+          <div class="pill">Score so far: <span id="scoreLive">0</span>%</div>
+          <div class="pill" id="modePill">Mode</div>
+          <div class="pill right">Time left: <b id="timeLeft">--:--</b></div>
+        </div>
+        <div class="bar" style="margin:10px 0 16px"><i id="progress"></i></div>
+
+        <div id="qContainer"></div>
+
+        <div class="controls">
+          <button class="btn" onclick="prevQ()">⏮ Prev</button>
+          <button class="btn" onclick="nextQ()">Next ⏭</button>
+          <button class="btn warn" onclick="toggleFlag()">🚩 Flag</button>
+          <button class="btn" id="btnCheck" onclick="checkAnswer()">✅ Check Answer</button>
+          <button class="btn danger right" onclick="finishExam()">🏁 Finish</button>
+        </div>
+      </div>
+      <aside class="card pad" style="width:320px;max-width:100%">
+        <h3>Navigator</h3>
+        <div id="navGrid" class="row"></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="screenResults" class="card pad hidden">
+    <h2>Results</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="h">Score</div><div id="resScore" class="v">0%</div></div>
+      <div class="kpi"><div class="h">Correct</div><div id="resCorrect" class="v">0</div></div>
+      <div class="kpi"><div class="h">Incorrect</div><div id="resIncorrect" class="v">0</div></div>
+      <div class="kpi"><div class="h">Time used</div><div id="resTime" class="v">--:--</div></div>
+    </div>
+    <div class="controls" style="margin-top:12px">
+      <button class="btn" onclick="reviewMissed()">📊 Review missed</button>
+      <button class="btn primary" onclick="restart()">🔁 Restart</button>
+      <button class="btn" onclick="backToStart()">🏠 Home</button>
+    </div>
+
+    <h3 style="margin-top:18px">Breakdown</h3>
+    <table class="table" id="domainTable"></table>
+
+    <div id="reviewList" style="margin-top:16px"></div>
+  </section>
+</div>
+
+<script>
+/*************************
+ * Question Bank (Original + Extra, NDA‑safe)
+ *************************/
+const BANK = [
+  // Base questions (from earlier version)
+  {id:"A1", domain:"System Management", difficulty:2, type:"single", stem:"Which systemd command shows whether a unit failed during the last boot?", choices:["systemctl list-units --type=service","systemctl --failed","journalctl -u <unit>","systemctl status --failed"], answer:[1], explanation:"systemctl --failed lists failed units across the system. 'status --failed' is not a valid subcommand."},
+  {id:"A2", domain:"System Management", difficulty:2, type:"single", stem:"You need a one‑time job to run 5 minutes after boot. Which is most appropriate?", choices:["cron @reboot entry","systemd oneshot service with a timer","at now + 5 reboot","sleep 300 && /etc/rc.local"], answer:[1], explanation:"A systemd oneshot service with a matching timer provides reliable, dependency‑aware delayed execution."},
+  {id:"A3", domain:"System Management", difficulty:2, type:"multi", stem:"Select two valid targets for isolating a systemd state.", choices:["graphical.target","sysinit.target","emergency.target","multi-user.target"], answer:[0,3], explanation:"graphical and multi-user are user‑facing targets commonly isolated; sysinit is a boot phase and emergency is a rescue shell not usually isolated into from multi-user."},
+  {id:"A4", domain:"System Management", difficulty:1, type:"fib", stem:"Fill the blank: To reload systemd unit files after editing, run ____.", fib:"systemctl daemon-reload", explanation:"daemon-reload tells PID 1 to rescan unit definitions."},
+  {id:"A5", domain:"System Management", difficulty:2, type:"single", stem:"On a systemd host, you want a service to start after networking is up. Which unit dependency is most accurate?", choices:["After=network.target","Wants=network.service","After=NetworkManager.service","Requires=network.target"], answer:[0], explanation:"After=network.target orders startup; Requires would pull it in, which isn't always desired. NetworkManager is distribution‑specific."},
+
+  {id:"B1", domain:"Security", difficulty:2, type:"single", stem:"Which command adds a firewall rule persistently on a firewalld host?", choices:["iptables -A INPUT -p tcp --dport 22 -j ACCEPT","firewall-cmd --add-service=ssh","nft add rule inet filter input tcp dport 22 accept","ufw allow 22/tcp"], answer:[1], explanation:"firewall-cmd --add-service=ssh affects runtime; use --permanent to persist. Among given options, firewalld command is relevant; persistence generally needs --permanent followed by --reload."},
+  {id:"B2", domain:"Security", difficulty:2, type:"multi", stem:"On SELinux‑enforcing hosts, which two commands help diagnose a denied action?", choices:["ausearch -m avc","restorecon -Rv /var/www","semanage login -l","sealert -a /var/log/audit/audit.log"], answer:[0,3], explanation:"ausearch filters audit records (type=AVC). sealert analyzes logs and suggests fixes."},
+  {id:"B3", domain:"Security", difficulty:3, type:"single", stem:"A custom web app writes to /srv/app/upload. With SELinux enforcing, web server can't write. Fastest targeted fix?", choices:["chcon -t httpd_sys_rw_content_t /srv/app/upload -R","setenforce 0","semanage boolean -m --on httpd_can_network_connect","restorecon -R /srv/app/upload"], answer:[0], explanation:"Assigning the httpd_sys_rw_content_t type enables httpd to write. restorecon resets to default, which likely isn't writable."},
+  {id:"B4", domain:"Security", difficulty:1, type:"fib", stem:"Fill the blank: To create a new user with an expiry date 2025-12-31 using useradd, pass -e ____.", fib:"2025-12-31", explanation:"useradd -e <YYYY-MM-DD> sets account expiry."},
+
+  {id:"C1", domain:"Networking", difficulty:2, type:"single", stem:"On systemd‑resolved systems, which file is commonly a symlink to the stub resolver?", choices:["/etc/resolv.conf","/run/systemd/resolve/resolv.conf","/etc/host.conf","/etc/nsswitch.conf"], answer:[0], explanation:"/etc/resolv.conf often points to the systemd‑resolved stub (127.0.0.53)."},
+  {id:"C2", domain:"Networking", difficulty:2, type:"single", stem:"You need to persist a static IP on a NetworkManager host (CLI only). Which tool is best?", choices:["nmcli","ifconfig","ip addr add","netplan"], answer:[0], explanation:"nmcli manages NetworkManager connections persistently."},
+  {id:"C3", domain:"Networking", difficulty:2, type:"multi", stem:"Select two files used by NSS to determine name lookup order and host aliases.", choices:["/etc/hosts","/etc/nsswitch.conf","/etc/hostname","/etc/host.conf"], answer:[0,1], explanation:"/etc/hosts provides static mappings; /etc/nsswitch.conf controls resolution order."},
+  {id:"C4", domain:"Networking", difficulty:3, type:"single", stem:"You suspect MTU mismatch causing intermittent SSH hangs. Which quick test is most conclusive?", choices:["netstat -rn","ping -c3 -s 1472 -M do <peer>","traceroute -I <peer>","ss -tuna | grep 22"], answer:[1], explanation:"pings with DF bit and payload near 1500 detect PMTU issues."},
+
+  {id:"D1", domain:"Storage", difficulty:2, type:"single", stem:"Which command adds an existing PV to a VG?", choices:["vgextend vg0 /dev/sdb1","vgcreate vg0 /dev/sdb1","pvcreate /dev/sdb1","lvextend -l +100%FREE vg0/lv"], answer:[0], explanation:"vgextend augments an existing volume group with a PV."},
+  {id:"D2", domain:"Storage", difficulty:2, type:"multi", stem:"Choose two commands that display LUKS header information.", choices:["cryptsetup luksDump /dev/sdb1","lsblk --fs","blkid -p","file -s /dev/sdb1"], answer:[0,2], explanation:"cryptsetup luksDump and blkid -p reveal LUKS metadata."},
+  {id:"D3", domain:"Storage", difficulty:2, type:"fib", stem:"Fill the blank: To grow an ext4 filesystem online after extending the LV, run ____.", fib:"resize2fs", explanation:"resize2fs grows ext2/3/4 filesystems; xfs_growfs is for XFS."},
+
+  {id:"E1", domain:"Scripting", difficulty:2, type:"single", stem:"In Bash, which option causes a script to exit when an unbound variable is used?", choices:["set -e","set -u","set -o pipefail","set -x"], answer:[1], explanation:"-u treats unset variables as an error and exits."},
+  {id:"E2", domain:"Scripting", difficulty:3, type:"multi", stem:"Select two safe ways to iterate filenames with spaces in Bash.", choices:["for f in $(ls); do ...","find . -type f -print0 | while IFS= read -r -d '' f; do ...; done","while read f; do ...; done < <(ls)","for f in *; do [ -f \"$f\" ] && ...; done"], answer:[1,3], explanation:"Null‑delimited from find and globbing over * while quoting variables both avoid word splitting."},
+  {id:"E3", domain:"Scripting", difficulty:2, type:"fib", stem:"Fill the blank: In Bash, use ____ to get the exit status of the last command.", fib:"$?", explanation:"$? expands to the exit code of the most recent command."},
+
+  {id:"F1", domain:"Containers", difficulty:2, type:"single", stem:"Which Dockerfile directive sets a default command that can be overridden at runtime?", choices:["RUN","ENTRYPOINT","CMD","ARG"], answer:[2], explanation:"CMD provides defaults; ENTRYPOINT is harder‑wired."},
+  {id:"F2", domain:"Containers", difficulty:3, type:"multi", stem:"Kubernetes: pick two objects typically referenced by a Deployment.", choices:["ReplicaSet","ConfigMap","Ingress","PersistentVolumeClaim"], answer:[0,3], explanation:"A Deployment manages ReplicaSets; Pods can mount PVCs. ConfigMap/Ingress are used, but direct references vary."},
+
+  {id:"G1", domain:"Troubleshooting", difficulty:2, type:"single", stem:"A service fails on boot; journal shows 'ExecStart not found'. Likely cause?", choices:["Missing [Install] section","Wrong Type=notify","ExecStart path not executable or missing","WantedBy=multi-user.target missing"], answer:[2], explanation:"If ExecStart isn't found, the binary path is wrong or lacks execute permission."},
+  {id:"G2", domain:"Troubleshooting", difficulty:2, type:"single", stem:"After modifying /etc/fstab for an NFS mount, boot hangs. Quick recovery?", choices:["Boot with 'single' and comment the line","Run fsck -f","Rebuild initramfs","Drop SELinux to permissive"], answer:[0], explanation:"Boot single‑user (or add nofail/x-systemd.automount in the future) and fix fstab."},
+
+  {id:"S1", domain:"Scripting", difficulty:3, type:"dragdrop", stem:"Build a pipeline that finds rotated logs in /var/log (no recursion) and compresses them to .gz", tokens:["find /var/log -maxdepth 1","-type f","-name '*.log.*'","-exec gzip -9 {} +"], slots:4, answer:[0,1,2,3], explanation:"Order: find path, constrain type, filter names, then exec gzip."},
+  {id:"S2", domain:"Networking", difficulty:3, type:"dragdrop", stem:"Order the steps to create a persistent nmcli static IPv4 on interface eth0", tokens:["nmcli con add type ethernet ifname eth0 con-name static0","nmcli con mod static0 ipv4.addresses 10.10.10.20/24","nmcli con mod static0 ipv4.gateway 10.10.10.1","nmcli con mod static0 ipv4.dns 1.1.1.1,8.8.8.8","nmcli con mod static0 ipv4.method manual","nmcli con up static0"], slots:6, answer:[0,1,3,2,4,5], explanation:"Create connection, set address + DNS + gateway, choose manual, bring up."},
+
+  {id:"M1", domain:"Security", difficulty:2, type:"match", stem:"Match the file to its purpose", pairs:{"/etc/security/limits.conf":"PAM stack resource limits","/etc/pam.d/system-login":"PAM service includes","/etc/login.defs":"Useradd defaults","/etc/sudoers":"Privilege escalation policy"}, explanation:"Common auth files across distros (names may vary)."},
+  {id:"M2", domain:"Storage", difficulty:2, type:"match", stem:"Match the LVM term", pairs:{"PV":"Physical disk or partition","VG":"Pool of PVs","LV":"Usable block device","PE":"Fixed‑size allocation unit"}, explanation:"LVM building blocks and their roles."},
+
+  {id:"N1", domain:"Networking", difficulty:1, type:"single", stem:"Which command shows the route table on iproute2 systems?", choices:["route -n","ip route","netstat -r","nmcli route"], answer:[1], explanation:"'ip route' is the modern tool."},
+  {id:"N2", domain:"Networking", difficulty:2, type:"single", stem:"Which file disables password auth for SSH server?", choices:["/etc/ssh/ssh_config","/etc/ssh/sshd_config","~/.ssh/config","/etc/default/sshd"], answer:[1], explanation:"Set PasswordAuthentication no in sshd_config and reload."},
+  {id:"SM1", domain:"System Management", difficulty:2, type:"single", stem:"Which journalctl switch follows logs like tail -f?", choices:["-x","-k","-f","-b"], answer:[2], explanation:"-f follows the log stream."},
+  {id:"SM2", domain:"System Management", difficulty:2, type:"single", stem:"Where do you place a drop‑in to override only Environment for a service foo.service?", choices:["/etc/systemd/system/foo.service","/lib/systemd/system/foo.service","/etc/systemd/system/foo.service.d/override.conf","~/.config/systemd/user/foo.service.d/override.conf"], answer:[2], explanation:"Create a drop‑in dir with override.conf under /etc/systemd/system/<unit>.d."},
+  {id:"SM3", domain:"System Management", difficulty:2, type:"single", stem:"Which command masks a unit so it cannot be started (even manually)?", choices:["systemctl disable","systemctl stop","systemctl mask","systemctl preset"], answer:[2], explanation:"mask links unit to /dev/null."},
+  {id:"PK1", domain:"Packages", difficulty:2, type:"single", stem:"On Debian family, which command lists which package owns /usr/bin/ls?", choices:["dpkg -S /usr/bin/ls","apt-file search /usr/bin/ls","apt-cache policy coreutils","dpkg -L coreutils"], answer:[0], explanation:"dpkg -S finds owning package of an installed file."},
+  {id:"PK2", domain:"Packages", difficulty:2, type:"single", stem:"On RPM family, enable a repo file locally and refresh metadata. Which pair fits best?", choices:["rpm --import ; rpm -Uvh","dnf config-manager --set-enabled <repo>; dnf makecache","yum-config-manager --disable <repo>; yum repolist","dnf repolist all; rpm -qa"], answer:[1], explanation:"config‑manager toggles repos; makecache refreshes metadata."},
+  {id:"SH1", domain:"Scripting", difficulty:2, type:"single", stem:"Which shebang ensures POSIX sh, avoiding Bash‑specific features?", choices:["#!/bin/bash","#!/usr/bin/env bash","#!/bin/sh","#!/usr/local/bin/sh"], answer:[2], explanation:"/bin/sh aims for POSIX shell."},
+  {id:"SH2", domain:"Scripting", difficulty:2, type:"single", stem:"What does set -o pipefail do?", choices:["Treat unset vars as error","Exit on non‑zero status","Pipe returns status of last non‑zero in a pipeline","Enable xtrace"], answer:[2], explanation:"pipefail makes a pipeline fail if any command fails."},
+  {id:"TS1", domain:"Troubleshooting", difficulty:2, type:"single", stem:"An XFS filesystem reports 'out of inodes'—what's the correct interpretation?", choices:["XFS has no inodes; message is wrong","You've exhausted free blocks","Dentries cache is full","Project quotas or inode‑like structures are exhausted; free space may remain"], answer:[3], explanation:"XFS uses dynamic inode allocation but limits can still be hit (projects/metadata)."},
+  {id:"NETD", domain:"Networking", difficulty:2, type:"single", stem:"Which tool shows which process is bound to TCP port 8080?", choices:["ss -tulpn | grep :8080","lsof -i :8080","netstat -plant | grep 8080","All of the above depending on distro"], answer:[3], explanation:"Any of them may work; 'ss' is modern; lsof is common; netstat may be present."},
+  {id:"DNS1", domain:"Networking", difficulty:2, type:"single", stem:"systemd‑resolved stub resolver IP is typically:", choices:["127.0.0.1","127.0.0.53","::1","224.0.0.251"], answer:[1], explanation:"127.0.0.53 is the local stub."},
+  {id:"FS1", domain:"Storage", difficulty:2, type:"single", stem:"Which command grows an XFS filesystem online after LV expansion?", choices:["resize2fs","xfs_repair","xfs_growfs","tune2fs"], answer:[2], explanation:"xfs_growfs grows mounted XFS."},
+  {id:"FS2", domain:"Storage", difficulty:2, type:"single", stem:"To ensure a mount doesn't block boot if the server is down, add which mount option?", choices:["nofail","_netdev","bg","soft"], answer:[0], explanation:"nofail allows system to continue booting without failing the mount."},
+  {id:"PK3", domain:"Packages", difficulty:2, type:"single", stem:"On Debian, refresh package lists without upgrading:", choices:["apt update","apt upgrade","apt-get dist-upgrade","apt-cache policy"], answer:[0], explanation:"apt update downloads package lists."},
+  {id:"CTL1", domain:"Containers", difficulty:2, type:"single", stem:"In Kubernetes, which object defines a stable network identity for a set of Pods?", choices:["Service","Ingress","EndpointSlice","StatefulSet"], answer:[0], explanation:"Service provides stable virtual IP for Pods."},
+  {id:"AUTH1", domain:"Security", difficulty:2, type:"single", stem:"Which file controls sudo rules (prefer editing safely)?", choices:["/etc/sudoers (via visudo)","/etc/security/sudo.conf","/etc/pam.d/sudo","/etc/polkit-1/rules.d"], answer:[0], explanation:"Use visudo to validate."},
+  {id:"LOG1", domain:"System Management", difficulty:2, type:"single", stem:"Show logs from previous boot only:", choices:["journalctl -b -1","journalctl -k","journalctl --since yesterday","journalctl -u"], answer:[0], explanation:"-b -1 targets prior boot."},
+  {id:"PROC1", domain:"System Management", difficulty:2, type:"single", stem:"Which command shows CPU usage per process sorted interactively?", choices:["top","ps aux","vmstat 1","htop"], answer:[3], explanation:"htop is interactive and sortable (if installed)."},
+  {id:"FSCK1", domain:"Storage", difficulty:2, type:"single", stem:"Which filesystem should NOT be checked with fsck while mounted read‑write?", choices:["ext4","xfs","btrfs","all of them"], answer:[3], explanation:"fsck on a mounted rw FS is unsafe; xfs uses xfs_repair offline."},
+  {id:"CRON1", domain:"Automation", difficulty:2, type:"single", stem:"Which anacron feature differs from classic cron?", choices:["Runs missed jobs after downtime","Per‑user crontabs","@reboot specials","Systemd integration"], answer:[0], explanation:"Anacron runs periodic jobs that were missed while system was off."},
+
+  // Extra questions appended
+  {id:"A6", domain:"System Management", difficulty:2, type:"single", stem:"Which command lists all enabled services in systemd?", choices:["systemctl list-unit-files --state=enabled","systemctl --failed","systemctl list-units --type=service","systemctl is-enabled *"], answer:[0], explanation:"list-unit-files shows enablement state; filter by --state=enabled."},
+  {id:"A7", domain:"System Management", difficulty:2, type:"single", stem:"Which journalctl switch limits output to messages from current boot only?", choices:["-k","-u","-b","-f"], answer:[2], explanation:"-b scopes to the current boot; -b -1 previous, etc."},
+  {id:"A8", domain:"System Management", difficulty:3, type:"multi", stem:"To run a service only when /mnt/data is mounted by systemd, choose two directives.", choices:["Wants=mnt-data.mount","After=mnt-data.mount","BindsTo=mnt-data.mount","RequiresMountsFor=/mnt/data"], answer:[1,3], explanation:"After orders startup; RequiresMountsFor ensures mount exists before starting."},
+  {id:"A9", domain:"System Management", difficulty:1, type:"fib", stem:"Fill the blank: systemd user units reside under ~/.config/systemd/____/", fib:"user", explanation:"User units default path is ~/.config/systemd/user."},
+  {id:"A10", domain:"System Management", difficulty:2, type:"single", stem:"Which command shows failed boots and their IDs?", choices:["journalctl --list-boots","systemctl list-jobs","last -x","loginctl list-sessions"], answer:[0], explanation:"--list-boots prints boot IDs and ranges in the journal."},
+
+  {id:"B5", domain:"Security", difficulty:2, type:"single", stem:"Which file maps SELinux contexts to paths persistently?", choices:["/etc/selinux/config","/etc/selinux/targeted/contexts/files/file_contexts.local","/etc/selinux/semanage.conf","/etc/selinux/restore.list"], answer:[1], explanation:"Local custom mappings are stored in file_contexts.local (managed by semanage fcontext)."},
+  {id:"B6", domain:"Security", difficulty:2, type:"single", stem:"Set a temporary SELinux boolean httpd_can_network_connect to on:", choices:["setsebool -P httpd_can_network_connect on","semanage boolean -m --on httpd_can_network_connect","setsebool httpd_can_network_connect on","getenforce httpd_can_network_connect on"], answer:[2], explanation:"setsebool without -P toggles at runtime only."},
+  {id:"B7", domain:"Security", difficulty:2, type:"multi", stem:"Choose two commands that list active firewalld zones and assigned interfaces.", choices:["firewall-cmd --get-active-zones","firewall-cmd --list-all","nmcli connection show","nmcli device show"], answer:[0,1], explanation:"--get-active-zones shows interfaces per zone; --list-all prints services/ports per zone."},
+  {id:"B8", domain:"Security", difficulty:3, type:"single", stem:"Best practice to allow user 'ops' run /usr/bin/systemctl restart httpd via sudo without password?", choices:["Add NOPASSWD rule in /etc/sudoers.d/ops","Edit /etc/sudoers directly with nano","Give ops full wheel membership","Use setcap on systemctl"], answer:[0], explanation:"Create principle-of-least-privilege rule in a drop-in and validate with visudo."},
+  {id:"B9", domain:"Security", difficulty:2, type:"fib", stem:"Fill the blank: SSH key fingerprint for ECDSA uses algorithm tag ____ in known_hosts.", fib:"ecdsa-sha2-nistp256", explanation:"Typical default ECDSA host key tag."},
+
+  {id:"C5", domain:"Networking", difficulty:2, type:"single", stem:"What does 'ip a s dev eth0' show?", choices:["ARP table","Interface addresses and state","Routing rules","NDP neighbors"], answer:[1], explanation:"ip address show dev eth0 lists addresses and flags."},
+  {id:"C6", domain:"Networking", difficulty:2, type:"multi", stem:"Pick two tools to capture DNS traffic quickly.", choices:["tcpdump -i any port 53","journalctl -u named","ss -u -lpn","tshark -f 'port 53'"], answer:[0,3], explanation:"tcpdump/tshark capture packets; journalctl shows service logs only."},
+  {id:"C7", domain:"Networking", difficulty:3, type:"single", stem:"On systemd-resolved, how to query per-link DNS?", choices:["resolvectl query --link=IFINDEX name","nslookup name server","dig @127.0.0.53 name","nscd -g name"], answer:[0], explanation:"resolvectl (systemd-resolve) supports per-link queries."},
+  {id:"C8", domain:"Networking", difficulty:2, type:"single", stem:"Set default route with iproute2:", choices:["ip route add default via 10.0.0.1","route add default gw 10.0.0.1","ip r chg default 10.0.0.1","nmcli route add default 10.0.0.1"], answer:[0], explanation:"ip route add default via <gw>."},
+  {id:"C9", domain:"Networking", difficulty:2, type:"fib", stem:"Fill the blank: The mdns multicast address on IPv4 is ____.", fib:"224.0.0.251", explanation:"mDNS uses 224.0.0.251:5353 on IPv4."},
+
+  {id:"D4", domain:"Storage", difficulty:2, type:"single", stem:"Which tool displays filesystem UUIDs neatly?", choices:["lsblk -f","blkid","findmnt -o TARGET,UUID","All of the above"], answer:[3], explanation:"All can show UUIDs with proper options."},
+  {id:"D5", domain:"Storage", difficulty:2, type:"single", stem:"Safest command to activate all LVM VGs at boot?", choices:["vgchange -a y","lvchange -ay","lvm vgscan --mknodes","No action; systemd/lvm handles it"], answer:[3], explanation:"Modern boot activates VGs automatically via udev/systemd."},
+  {id:"D6", domain:"Storage", difficulty:3, type:"multi", stem:"Pick two to check btrfs RAID1 device health.", choices:["btrfs device stats /mnt","btrfs scrub status /mnt","mdadm --detail /dev/md0","xfs_repair -n /dev/sdb1"], answer:[0,1], explanation:"btrfs has built-in device stats and scrub status."},
+  {id:"D7", domain:"Storage", difficulty:2, type:"fib", stem:"Fill the blank: Create an XFS filesystem on /dev/mapper/vg0-lv1 with mkfs.____ /dev/mapper/vg0-lv1", fib:"xfs", explanation:"mkfs.xfs creates an XFS filesystem."},
+
+  {id:"E4", domain:"Scripting", difficulty:2, type:"single", stem:"In Bash, what's the portable test for an executable file?", choices:["[ -x $file ]","test -X $file","[[ -e $file ]]","file $file | grep exec"], answer:[0], explanation:"-x tests execute bit and existence."},
+  {id:"E5", domain:"Scripting", difficulty:2, type:"single", stem:"Safely read a line including leading/trailing spaces:", choices:["read line","IFS= read -r line","read -r -d '' line","read -a line"], answer:[1], explanation:"IFS= preserves whitespace and -r avoids backslash escapes."},
+  {id:"E6", domain:"Scripting", difficulty:3, type:"multi", stem:"Choose two: reliable ways to schedule a root script cross‑distro.", choices:["crontab -e","systemd timer","/etc/rc.local","atd"], answer:[0,1], explanation:"cron and systemd timers are common and portable."},
+  {id:"E7", domain:"Scripting", difficulty:2, type:"fib", stem:"Fill the blank: Bash array length syntax is ${#____[@]}", fib:"array", explanation:"${#array[@]} returns number of elements."},
+
+  {id:"F3", domain:"Containers", difficulty:2, type:"single", stem:"docker run -p 8080:80 maps ports how?", choices:["Host 80 to container 8080","Host 8080 to container 80","Bi‑directional NAT","Only UDP"], answer:[1], explanation:"-p host:container."},
+  {id:"F4", domain:"Containers", difficulty:3, type:"multi", stem:"Pick two Kubernetes controllers that ensure desired state.", choices:["Deployment","DaemonSet","Service","ConfigMap"], answer:[0,1], explanation:"Deployment and DaemonSet are controllers; Service/ConfigMap are resources."},
+  {id:"F5", domain:"Containers", difficulty:2, type:"fib", stem:"Fill the blank: To exec into a running container named web, run docker ____ -it web /bin/sh", fib:"exec", explanation:"docker exec attaches to the running container."},
+
+  {id:"G3", domain:"Troubleshooting", difficulty:2, type:"single", stem:"Which command shows why a systemd unit failed last time?", choices:["systemctl cat <unit>","systemctl status <unit>","systemctl list-timers","loginctl session-status"], answer:[1], explanation:"status prints last logs and failure reason."},
+  {id:"G4", domain:"Troubleshooting", difficulty:3, type:"multi", stem:"Server can't resolve external names; pick two first checks.", choices:["/etc/resolv.conf contents","Outbound firewall rules for 53/udp","/etc/hosts entries for targets","/etc/hostname"], answer:[0,1], explanation:"Resolvers and firewall often cause DNS failures."},
+  {id:"G5", domain:"Troubleshooting", difficulty:2, type:"fib", stem:"Fill the blank: To tail kernel ring buffer live on modern systems use ____ -k -f", fib:"journalctl", explanation:"journalctl -k -f follows kernel messages."},
+
+  {id:"S3", domain:"Scripting", difficulty:3, type:"dragdrop", stem:"Compose a safe 'find' that deletes empty dirs under /var/tmp (max depth 2)", tokens:["find /var/tmp -maxdepth 2","-type d","-empty","-delete"], slots:4, answer:[0,1,2,3], explanation:"Order find path, filter type + empty, then delete."},
+  {id:"S4", domain:"Storage", difficulty:3, type:"dragdrop", stem:"Create LVM from /dev/sdb1 then make ext4 and mount at /data", tokens:["pvcreate /dev/sdb1","vgcreate vg0 /dev/sdb1","lvcreate -n data -l 100%FREE vg0","mkfs.ext4 /dev/vg0/data","mkdir -p /data && mount /dev/vg0/data /data"], slots:5, answer:[0,1,2,3,4], explanation:"Initialize PV, make VG, create LV, mkfs, mount."},
+  {id:"S5", domain:"Networking", difficulty:3, type:"dragdrop", stem:"Order to debug MTU/PMTU over path", tokens:["ip link show dev eth0","ping -M do -s 1472 <peer>","tracepath <peer>","adjust MTU or fix tunnel"], slots:4, answer:[0,1,2,3], explanation:"Check link, DF ping, trace path, then remediate."},
+
+  {id:"M3", domain:"Networking", difficulty:2, type:"match", stem:"Match tool to use", pairs:{"tracepath":"Discover PMTU","nmtui":"TUI for NetworkManager","resolvectl":"Query systemd-resolved","ss":"Socket inspection"}, explanation:"Common net tools."},
+  {id:"M4", domain:"Packages", difficulty:2, type:"match", stem:"Match Debian packaging command", pairs:{"apt update":"Refresh lists","apt upgrade":"Install upgrades","dpkg -L <pkg>":"List files in package","dpkg -S <file>":"Find owning package"}, explanation:"Debian admin tasks."},
+
+  {id:"PK4", domain:"Packages", difficulty:2, type:"single", stem:"On RPM systems, which shows which package owns /usr/bin/python3?", choices:["rpm -qf /usr/bin/python3","dnf provides /usr/bin/python3","yum whatprovides /usr/bin/python3","All of the above"], answer:[3], explanation:"All can map files to packages depending on tools available."},
+  {id:"PK5", domain:"Packages", difficulty:2, type:"single", stem:"Safely remove a package but keep deps if still needed (Debian):", choices:["apt remove <pkg>","apt purge <pkg>","apt autoremove <pkg>","dpkg --remove --force"], answer:[0], explanation:"'remove' keeps config; 'purge' removes config too; autoremove removes unused deps."},
+  {id:"PK6", domain:"Packages", difficulty:2, type:"fib", stem:"Fill the blank: On dnf systems, clear metadata cache with dnf ____.", fib:"clean all", explanation:"dnf clean all clears caches."},
+
+  {id:"LOG2", domain:"System Management", difficulty:2, type:"single", stem:"journalctl -u nginx.service -S '2025-08-01' -U '2025-08-09' means:", choices:["Filter by boot","Show kernel logs","Show unit logs between dates","Follow logs"], answer:[2], explanation:"-S since, -U until."},
+  {id:"LOG3", domain:"System Management", difficulty:2, type:"single", stem:"Which command compresses rotated journald archives?", choices:["journalctl --vacuum-time","journalctl --rotate","journalctl --verify","journalctl --flush"], answer:[1], explanation:"--rotate triggers rotation; compression is handled per config (SystemMaxUse, etc.)."},
+  {id:"LOG4", domain:"System Management", difficulty:2, type:"fib", stem:"Fill the blank: Persistent journal storage directory is /var/log/____.", fib:"journal", explanation:"/var/log/journal holds persistent journal files."},
+
+  {id:"AUTH2", domain:"Security", difficulty:2, type:"single", stem:"Lock user 'alice' without expiring password:", choices:["passwd -l alice","usermod -L alice","chage -E0 alice","Both A and B"], answer:[3], explanation:"Both passwd -l and usermod -L lock the account by prepending '!' to hash."},
+  {id:"AUTH3", domain:"Security", difficulty:2, type:"single", stem:"Which PAM file defines auth order globally on Debian?", choices:["/etc/pam.d/common-auth","/etc/pam.d/system-auth","/etc/pam.conf","/etc/security/pam_env.conf"], answer:[0], explanation:"Debian splits into common-* includes."},
+  {id:"AUTH4", domain:"Security", difficulty:2, type:"fib", stem:"Fill: Generate a salted SHA‑512 hash for new passwd entry with openssl passwd -6 ____", fib:"-salt <salt>", explanation:"-6 selects SHA‑512; optional -salt."},
+
+  {id:"NTP1", domain:"Networking", difficulty:2, type:"single", stem:"chrony: which shows current sources and state?", choices:["chronyc tracking","chronyc sources -v","timedatectl status","ntpq -p"], answer:[1], explanation:"sources -v shows details; tracking shows summary."},
+  {id:"NTP2", domain:"Networking", difficulty:2, type:"fib", stem:"Fill: systemd-timesyncd status via ____ status systemd-timesyncd", fib:"systemctl", explanation:"Managed as a systemd service."},
+
+  {id:"RPM1", domain:"Packages", difficulty:2, type:"single", stem:"Import a GPG key file for dnf repo:", choices:["rpm --import <file>","dnf gpg --import <file>","cp <file> /etc/pki/rpm-gpg/","gpg --import <file>"], answer:[0], explanation:"Use rpm --import or include in .repo file."},
+  {id:"RPM2", domain:"Packages", difficulty:2, type:"multi", stem:"Two ways to list files in an installed RPM package 'bash'", choices:["rpm -ql bash","dnf repoquery -l bash","dnf info bash","rpm -q bash --provides"], answer:[0,1], explanation:"-ql lists files; repoquery -l works via dnf plugins."},
+
+  {id:"SSH1", domain:"Security", difficulty:2, type:"single", stem:"Disable root SSH login while allowing sudo for admins:", choices:["PermitRootLogin no","AllowUsers !root","DenyUsers root","UsePrivilegeSeparation sandbox"], answer:[0], explanation:"Set in sshd_config and reload."},
+  {id:"SSH2", domain:"Security", difficulty:2, type:"fib", stem:"Fill: Reload OpenSSH server without disconnecting sessions: systemctl ____ sshd", fib:"reload", explanation:"reload re-reads config without restart."},
+
+  {id:"KERN1", domain:"System Management", difficulty:2, type:"single", stem:"Which shows currently loaded kernel modules?", choices:["lsmod","modprobe -l","uname -a","sysctl -a"], answer:[0], explanation:"lsmod lists loaded modules."},
+  {id:"KERN2", domain:"System Management", difficulty:2, type:"fib", stem:"Fill: To load module 'br_netfilter' now use modprobe ____", fib:"br_netfilter", explanation:"modprobe loads modules by name."},
+
+  {id:"FSTAB1", domain:"Storage", difficulty:2, type:"single", stem:"Which fstab option lets non‑root users mount a device?", choices:["user","nofail","noauto","defaults"], answer:[0], explanation:"'user' allows ordinary user to mount."},
+  {id:"FSTAB2", domain:"Storage", difficulty:2, type:"fib", stem:"Fill: fstab fields order begins with <fs_spec> and <fs_file>, then <fs_____>", fib:"vfstype", explanation:"Third field is filesystem type."},
+
+  {id:"SYSCTL1", domain:"System Management", difficulty:2, type:"single", stem:"Persist kernel parameter net.ipv4.ip_forward=1:", choices:["sysctl -w net.ipv4.ip_forward=1","echo 1 > /proc/sys/net/ipv4/ip_forward","Add to /etc/sysctl.conf and sysctl -p","All of the above"], answer:[3], explanation:"At runtime with sysctl -w; persist via sysctl.conf."},
+  {id:"SYSCTL2", domain:"System Management", difficulty:2, type:"fib", stem:"Fill: Reload /etc/sysctl.conf changes with sysctl ____", fib:"-p", explanation:"sysctl -p applies persisted settings."}
+];
+
+const STATE_KEY = 'xk005a_sim_state_v1';
+let state = {
+  mode:'full',
+  order:[],
+  answers:{},
+  correct:{},
+  flags:{},
+  index:0,
+  mins:90,
+  timeLeft:0,
+  startTs:null,
+  study:false,
+  shuffle:true,
+  finished:false,
+};
+
+function save(){ localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+function load(){ try{ return JSON.parse(localStorage.getItem(STATE_KEY) || 'null'); }catch{ return null; } }
+function clearSave(){ localStorage.removeItem(STATE_KEY); location.reload(); }
+
+const el = sel => document.querySelector(sel);
+function fmtTime(sec){ const m=Math.floor(sec/60), s=sec%60; return `${m}:${s.toString().padStart(2,'0')}`; }
+function sample(arr, n){ const a=[...arr]; const out=[]; while(a.length && out.length<n){ out.push(a.splice(Math.floor(Math.random()*a.length),1)[0]); } return out; }
+function shuffle(arr){ return arr.map(v=>[Math.random(),v]).sort((a,b)=>a[0]-b[0]).map(v=>v[1]); }
+
+function init(){
+  const byDomain = {};
+  for(const q of BANK){ byDomain[q.domain] = (byDomain[q.domain]||0)+1; }
+  const stats = Object.entries(byDomain).map(([d,c])=>`<div class="kpi"><div class="h">${d}</div><div class="v">${c}</div></div>`).join('');
+  el('#bankStats').innerHTML = stats;
+
+  const saved = load();
+  if(saved){
+    el('#resumeInfo').innerHTML = `Mode: <b>${saved.mode}</b> • Question ${saved.index+1}/${saved.order.length} • Time left ${fmtTime(saved.timeLeft)} • Study ${saved.study? 'On':'Off'}`;
+    el('#btnResume').classList.remove('hidden');
+  }
+}
+
+function toggleStudy(){ state.study=!state.study; el('#studyToggle').classList.toggle('on', state.study); }
+function toggleShuffle(){ state.shuffle=!state.shuffle; el('#shuffleToggle').classList.toggle('on', state.shuffle); }
+
+function startExam(mode){
+  state = { ...state, mode, mins:parseInt(el('#minutes').value)||90, study:el('#studyToggle').classList.contains('on'), shuffle:el('#shuffleToggle').classList.contains('on') };
+  const ids = BANK.map(q=>q.id);
+  let order = ids;
+  if(mode==='90') order = state.shuffle ? sample(ids, Math.min(90, ids.length)) : ids.slice(0, Math.min(90, ids.length));
+  if(mode==='practice') order = state.shuffle ? shuffle(ids) : ids;
+  if(mode==='full') order = state.shuffle ? shuffle(ids) : ids;
+  state.order = order; state.index=0; state.answers={}; state.correct={}; state.flags={}; state.finished=false;
+  state.timeLeft = (mode==='practice') ? 0 : state.mins*60;
+  state.startTs = Date.now();
+  save();
+  showExam();
+}
+
+function resumeFromSave(){ state = load(); if(!state) return; showExam(); }
+function backToStart(){ document.getElementById('screenResults').classList.add('hidden'); document.getElementById('screenExam').classList.add('hidden'); document.getElementById('screenStart').classList.remove('hidden'); init(); }
+
+let timerId=null;
+function showExam(){
+  el('#screenStart').classList.add('hidden');
+  el('#screenResults').classList.add('hidden');
+  el('#screenExam').classList.remove('hidden');
+  el('#qTotal').textContent = state.order.length;
+  el('#modePill').textContent = `Mode: ${state.mode}${state.study?' (Study)':''}`;
+  renderNav();
+  renderQuestion();
+  if(state.mode!=='practice') startTimer(); else { el('#timeLeft').textContent = '∞'; }
+}
+
+function startTimer(){
+  if(timerId) clearInterval(timerId);
+  timerId = setInterval(()=>{
+    state.timeLeft = Math.max(0, state.timeLeft-1);
+    el('#timeLeft').textContent = fmtTime(state.timeLeft);
+    if(state.timeLeft===0){ clearInterval(timerId); finishExam(); }
+    save();
+  }, 1000);
+}
+
+function current(){ return BANK.find(q=>q.id===state.order[state.index]); }
+
+function renderNav(){
+  const frag = document.createDocumentFragment();
+  state.order.forEach((id,i)=>{
+    const btn = document.createElement('button');
+    btn.className = 'btn small';
+    const isAns = state.answers[id]!=null;
+    const isFlag = state.flags[id];
+    const good = state.correct[id]===true;
+    const bad = state.correct[id]===false;
+    btn.textContent = (i+1);
+    btn.style.borderColor = isFlag? '#eab308' : (good? '#16a34a' : bad? '#dc2626' : '#23405e');
+    btn.onclick = ()=>{ state.index=i; save(); renderQuestion(); };
+    frag.appendChild(btn);
+  });
+  const grid = el('#navGrid'); grid.innerHTML=''; grid.appendChild(frag);
+  el('#flagCount').textContent = Object.values(state.flags).filter(Boolean).length;
+}
+
+function renderQuestion(){
+  const q = current();
+  el('#qNum').textContent = state.index+1;
+  const pct = ((state.index)/Math.max(1,state.order.length))*100; el('#progress').style.width = pct+'%';
+
+  let html = `<div class="qstem">${q.stem}</div>`;
+  if(q.img){ html += `<div class="center" style="margin:8px 0"><img alt="diagram" src="${q.img}" style="max-width:100%;border:1px solid #1c2a40;border-radius:8px"></div>`; }
+
+  const saved = state.answers[q.id];
+
+  if(q.type==='single' || q.type==='multi'){
+    const type = q.type==='single' ? 'radio' : 'checkbox';
+    html += `<div class="answers">` + q.choices.map((c,idx)=>{
+      const checked = Array.isArray(saved) && saved.includes(idx) ? 'checked' : '';
+      return `<label class="opt"><input name="ans" type="${type}" value="${idx}" ${checked}/> <div>${c}</div></label>`;
+    }).join('') + `</div>`;
+  }
+  else if(q.type==='fib'){
+    html += `<input id="fib" type="text" placeholder="Type answer" style="width:100%;padding:12px;border-radius:10px;border:1px solid #25364f;background:#0d1522;color:var(--text)" value="${saved||''}">`;
+  }
+  else if(q.type==='dragdrop'){
+    html += `<div class="muted small">Drag tokens into order (left to right)</div><div class="drag-area" id="tokens">`+
+      q.tokens.map((t,i)=>`<div class="token" draggable="true" data-i="${i}">${t}</div>`).join('')+
+      `</div>`;
+    html += `<div class="drag-area" id="slots">`+ Array.from({length:q.slots},(_,i)=>`<div class="drop" data-slot="${i}">Drop #${i+1}</div>`).join('') +`</div>`;
+    setupDnD(q, saved);
+  }
+  else if(q.type==='match'){
+    const keys = Object.keys(q.pairs); const vals = Object.values(q.pairs);
+    const opts = shuffle(vals);
+    html += `<table class="table">`+ keys.map((k,i)=>{
+      const sel = (saved && saved[k])? saved[k] : '';
+      return `<tr><th style="width:45%">${k}</th><td><select data-k="${k}" style="width:100%;padding:8px;border-radius:8px;background:#0d1522;color:var(--text);border:1px solid #25364f">`+
+        ['','-- choose --',...opts].map(v=>{
+          const val = v===''? '' : v==='-- choose --'? '' : v;
+          const label = v===''? '' : v;
+          const selected = sel===val? 'selected' : '';
+          return `<option value="${val}" ${selected}>${label||'-- choose --'}</option>`;
+        }).join('')+
+        `</select></td></tr>`;
+    }).join('') + `</table>`;
+  }
+
+  html += `<div id="explain" class="explain hidden"></div>`;
+
+  el('#qContainer').innerHTML = html;
+
+  if(state.study){ showExplanation(q, false); }
+
+  liveScore();
+}
+
+function setupDnD(q, saved){
+  setTimeout(()=>{
+    const tokens = Array.from(document.querySelectorAll('#tokens .token'));
+    const slots = Array.from(document.querySelectorAll('#slots .drop'));
+    let order = saved || [];
+    if(order.length){
+      slots.forEach((slot,i)=>{ const tokenIdx = order[i]; if(tokenIdx!=null){ const t = tokens.find(x=>x.dataset.i==tokenIdx); if(t){ slot.textContent=''; slot.appendChild(t); slot.classList.add('filled'); } } });
+    }
+    tokens.forEach(t=>{
+      t.addEventListener('dragstart', e=>{ e.dataTransfer.setData('text/plain', t.dataset.i); });
+    });
+    slots.forEach(s=>{
+      s.addEventListener('dragover', e=>{ e.preventDefault(); });
+      s.addEventListener('drop', e=>{
+        e.preventDefault(); const idx = e.dataTransfer.getData('text/plain');
+        const token = document.querySelector(`#tokens .token[data-i="${idx}"]`) || document.querySelector(`#slots .token[data-i="${idx}"]`);
+        if(token){ s.textContent=''; s.appendChild(token); s.classList.add('filled'); }
+        const now=[]; document.querySelectorAll('#slots .drop').forEach(slot=>{ const t = slot.querySelector('.token'); now.push(t? parseInt(t.dataset.i): null); });
+        state.answers[q.id]=now; save();
+      });
+    });
+  },0);
+}
+
+function gatherAnswer(q){
+  if(q.type==='single' || q.type==='multi'){
+    const nodes = Array.from(document.querySelectorAll('input[name="ans"]'));
+    const picked = nodes.filter(n=>n.checked).map(n=>parseInt(n.value));
+    return picked;
+  }
+  if(q.type==='fib'){
+    return (el('#fib').value||'').trim();
+  }
+  if(q.type==='dragdrop'){
+    const arr=[]; document.querySelectorAll('#slots .drop').forEach(slot=>{ const t = slot.querySelector('.token'); arr.push(t? parseInt(t.dataset.i): null); });
+    return arr;
+  }
+  if(q.type==='match'){
+    const map={}; document.querySelectorAll('select[data-k]').forEach(sel=>{ map[sel.dataset.k] = sel.value||''; });
+    return map;
+  }
+}
+
+function checkAnswer(){
+  const q=current();
+  const val = gatherAnswer(q);
+  state.answers[q.id]=val;
+
+  let correct=false;
+  if(q.type==='single' || q.type==='multi'){
+    const a = JSON.stringify((val||[]).sort());
+    const b = JSON.stringify((q.answer||[]).sort());
+    correct = (a===b);
+    document.querySelectorAll('.opt').forEach((opt,idx)=>{
+      if((q.answer||[]).includes(idx)) opt.classList.add('correct');
+      if(val && val.includes(idx) && !(q.answer||[]).includes(idx)) opt.classList.add('incorrect');
+    });
+  }
+  else if(q.type==='fib'){
+    const norm = s=>String(s).trim().toLowerCase();
+    correct = norm(val)===norm(q.fib);
+  }
+  else if(q.type==='dragdrop'){
+    const a = JSON.stringify(val);
+    const b = JSON.stringify(q.answer);
+    correct = (a===b);
+  }
+  else if(q.type==='match'){
+    const expected = q.pairs; correct = Object.keys(expected).every(k=> (val&&val[k]) === expected[k]);
+  }
+
+  state.correct[q.id]=correct;
+  save();
+  showExplanation(q, true, correct);
+  liveScore();
+}
+
+function showExplanation(q, graded, correct){
+  const box = el('#explain');
+  box.classList.remove('hidden');
+  const verdict = graded ? (correct? `<span style="color:#22c55e">Correct</span>` : `<span style="color:#ef4444">Incorrect</span>`) : `<span style="color:#93c5fd">Study</span>`;
+  box.innerHTML = `<b>${verdict}</b><div class="small muted" style="margin-top:6px">${q.explanation||''}</div>`;
+}
+
+function liveScore(){
+  const answered = state.order.filter(id=> state.correct[id]!==undefined);
+  const got = answered.filter(id=> state.correct[id]).length;
+  const pct = answered.length? Math.round((got/answered.length)*100) : 0;
+  el('#scoreLive').textContent = pct;
+}
+
+function nextQ(){ if(state.index < state.order.length-1){ state.index++; save(); renderQuestion(); }}
+function prevQ(){ if(state.index > 0){ state.index--; save(); renderQuestion(); }}
+function toggleFlag(){ const id=current().id; state.flags[id]=!state.flags[id]; save(); renderNav(); }
+
+function finishExam(){
+  state.finished=true; save();
+  if(timerId){ clearInterval(timerId); timerId=null; }
+  const total = state.order.length;
+  let correct=0; let incorrect=0; const domains={};
+  for(const id of state.order){ const q=BANK.find(x=>x.id===id); const ok=!!state.correct[id]; if(ok) correct++; else if(state.answers[id]!=null) incorrect++; domains[q.domain]=(domains[q.domain]||{t:0,c:0}); domains[q.domain].t++; if(ok) domains[q.domain].c++; }
+  const pct = Math.round((correct/total)*100);
+
+  el('#resScore').textContent = pct+"%";
+  el('#resCorrect').textContent = correct;
+  el('#resIncorrect').textContent = incorrect;
+  const elapsed = (state.mode==='practice')? 0 : (state.mins*60 - state.timeLeft);
+  el('#resTime').textContent = fmtTime(elapsed);
+
+  const rows = Object.entries(domains).map(([d,v])=>`<tr><th>${d}</th><td>${v.c}/${v.t}</td><td>${Math.round(v.c/v.t*100)}%</td></tr>`).join('');
+  el('#domainTable').innerHTML = `<tr><th>Domain</th><th>Correct</th><th>%</th></tr>`+rows;
+
+  document.getElementById('screenExam').classList.add('hidden');
+  document.getElementById('screenResults').classList.remove('hidden');
+}
+
+function reviewMissed(){
+  const div=el('#reviewList');
+  const missed = state.order.map(id=>BANK.find(q=>q.id===id)).filter(q=>state.correct[q.id]===false);
+  if(!missed.length){ div.innerHTML = `<p class="muted">No missed questions. 🎉</p>`; return; }
+  div.innerHTML = missed.map(q=>{
+    let correctText='';
+    if(q.type==='single' || q.type==='multi') correctText = (q.answer||[]).map(i=>q.choices[i]).join('; ');
+    else if(q.type==='fib') correctText = q.fib;
+    else if(q.type==='dragdrop') correctText = q.answer.map(i=>q.tokens[i]).join(' → ');
+    else if(q.type==='match') correctText = Object.entries(q.pairs).map(([k,v])=>`${k} → ${v}`).join('; ');
+    return `<div class="card pad" style="margin:8px 0"><div class="qstem">${q.stem}</div><div class="muted">Correct: ${correctText}</div><div class="explain">${q.explanation||''}</div></div>`;
+  }).join('');
+}
+
+function restart(){ state.index=0; state.answers={}; state.correct={}; state.flags={}; state.finished=false; if(state.mode!=='practice'){ state.timeLeft=state.mins*60; } save(); showExam(); }
+
+function downloadState(){ const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}); const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='xk005a_progress.json'; a.click(); URL.revokeObjectURL(a.href); }
+function importState(file){ const r=new FileReader(); r.onload=()=>{ try{ const data=JSON.parse(r.result); state=data; save(); alert('Imported. You can resume now.'); el('#btnResume').classList.remove('hidden'); }catch(e){ alert('Invalid file.'); } }; r.readAsText(file); }
+
+window.addEventListener('beforeunload',()=>save());
+window.addEventListener('load', init);
+</script>
+</body>
+</html>
