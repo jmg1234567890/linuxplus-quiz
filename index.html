@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Linux+ XK0‑005 — Quiz (Patched + Domain Filters)</title>
+<style>
+  :root{
+    --bg:#0b0f14; --panel:#121820; --panel-2:#11161e; --text:#e8eef7; --muted:#9eb0c6; --brand:#4ea1ff; --ok:#10b981; --bad:#ef4444; --warn:#f59e0b;
+    --shadow:0 10px 35px rgba(0,0,0,.35);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:linear-gradient(120deg,#0b0f14,#0e1420);color:var(--text);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial}
+  .wrap{max-width:1100px;margin:32px auto;padding:0 20px}
+  header{display:flex;gap:12px;align-items:center;justify-content:space-between;margin-bottom:18px}
+  .title{font-weight:800;letter-spacing:.3px}
+  .badge{padding:4px 10px;border-radius:999px;background:var(--panel);color:var(--muted);border:1px solid #223146}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid #1b2636;border-radius:16px;box-shadow:var(--shadow)}
+  .card.pad{padding:20px}
+  .row{display:flex;gap:16px;flex-wrap:wrap}
+  .grow{flex:1 1 360px}
+  .btn{appearance:none;border:1px solid #23405e;background:#142132;color:#d9e7ff;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:700;letter-spacing:.2px;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .btn:hover{filter:brightness(1.08)}
+  .btn.primary{background:linear-gradient(180deg,#1a67ff,#154ee0);border-color:#1a56e6}
+  .btn.good{background:linear-gradient(180deg,#10b981,#0ea371);border-color:#0e986a}
+  .btn.warn{background:linear-gradient(180deg,#f59e0b,#e08a0e);border-color:#e38709;color:#101}
+  .btn.danger{background:linear-gradient(180deg,#ef4444,#d93030);border-color:#c02626}
+  .muted{color:var(--muted)}
+  .bar{height:10px;background:#1b293c;border-radius:999px;overflow:hidden}
+  .bar>i{display:block;height:100%;width:0;background:linear-gradient(90deg,#35a2ff,#53e0ff)}
+  .kpis{display:grid;grid-template-columns:repeat(4,minmax(120px,1fr));gap:12px}
+  .kpi{padding:12px;border-radius:12px;background:#0f151f;border:1px solid #1b2636;text-align:center}
+  .kpi .h{font-size:13px;color:#a9bed6}
+  .kpi .v{font-size:22px;font-weight:800}
+  .qstem{font-size:20px;font-weight:700;margin:6px 0 12px}
+  .answers{display:grid;gap:10px}
+  .opt{display:flex;gap:10px;align-items:flex-start;padding:12px;border:1px solid #203047;border-radius:12px;background:#0e1520;cursor:pointer}
+  .opt input{margin-top:3px}
+  .opt.correct{border-color:#15803d;background:#0e1a14}
+  .opt.incorrect{border-color:#b91c1c;background:#1a0e0e}
+  .explain{margin-top:12px;padding:12px;border:1px dashed #2a3c58;border-radius:12px;background:#0f1724}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+  .pill{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;border:1px solid #25364f;background:#0d1522}
+  .right{margin-left:auto}
+  .hidden{display:none}
+  .small{font-size:13px}
+  .center{display:flex;align-items:center;justify-content:center}
+  .table{width:100%;border-collapse:separate;border-spacing:0 8px}
+  .table td,.table th{padding:10px 12px;background:#0f1724;border:1px solid #1c2a40}
+  .table th{background:#0c1220;color:#a6c1e3}
+  @media (max-width:720px){.kpis{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">Linux+ XK0‑005 • TotalTester‑style (Patched)</div>
+    <div class="badge" id="resumeBadge">Domain filters + standardized explanations</div>
+  </header>
+
+  <section id="screenStart" class="card pad">
+    <div class="row">
+      <div class="grow">
+        <h2>Choose a mode</h2>
+        <div class="controls">
+          <button class="btn primary" onclick="startExam('full')">📚 Start Full Bank</button>
+          <button class="btn primary" onclick="startExam('90')">🧪 Start 90‑Question Exam</button>
+          <button class="btn" onclick="startExam('practice')">🔁 Practice (untimed)</button>
+        </div>
+        <div class="controls" style="margin-top:8px">
+          <label class="pill"><input type="number" id="minutes" min="10" max="240" step="5" value="90" style="width:72px;background:transparent;color:var(--text);border:0;outline:none"> minutes</label>
+          <label class="pill">Shuffle
+            <span class="pill" id="shuffleToggle" onclick="toggleShuffle()" style="margin-left:8px;cursor:pointer">ON</span>
+          </label>
+        </div>
+      </div>
+      <div class="grow card pad">
+        <h3>Filter by domain</h3>
+        <p class="muted small">Pick one or more tags to limit the question pool. Leave empty for all.</p>
+        <div id="domainFilter" class="row"></div>
+        <div class="controls" style="margin-top:10px">
+          <button class="btn" onclick="selectAllDomains()">Select all</button>
+          <button class="btn" onclick="clearDomains()">Clear</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="screenExam" class="card pad hidden">
+    <div class="row" style="align-items:flex-start">
+      <div class="grow">
+        <div class="row" style="align-items:center">
+          <div class="pill">Question <b id="qNum">1</b>/<span id="qTotal">0</span></div>
+          <div class="pill">Score so far: <span id="scoreLive">0</span>%</div>
+          <div class="pill right">Time left: <b id="timeLeft">--:--</b></div>
+        </div>
+        <div class="bar" style="margin:10px 0 16px"><i id="progress"></i></div>
+        <div id="qContainer"></div>
+        <div class="controls">
+          <button class="btn" onclick="prevQ()">⏮ Prev</button>
+          <button class="btn" onclick="nextQ()">Next ⏭</button>
+          <button class="btn" id="btnCheck" onclick="checkAnswer()">✅ Check Answer</button>
+          <button class="btn danger right" onclick="finishExam()">🏁 Finish</button>
+        </div>
+      </div>
+      <aside class="card pad" style="width:320px;max-width:100%">
+        <h3>Navigator</h3>
+        <div id="navGrid" class="row"></div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="screenResults" class="card pad hidden">
+    <h2>Results</h2>
+    <div class="kpis">
+      <div class="kpi"><div class="h">Score</div><div id="resScore" class="v">0%</div></div>
+      <div class="kpi"><div class="h">Correct</div><div id="resCorrect" class="v">0</div></div>
+      <div class="kpi"><div class="h">Incorrect</div><div id="resIncorrect" class="v">0</div></div>
+      <div class="kpi"><div class="h">Time used</div><div id="resTime" class="v">--:--</div></div>
+    </div>
+    <div class="controls" style="margin-top:12px">
+      <button class="btn primary" onclick="restart()">🔁 Restart</button>
+      <button class="btn" onclick="backToStart()">🏠 Home</button>
+    </div>
+
+    <h3 style="margin-top:18px">Missed Questions</h3>
+    <div id="reviewList"></div>
+  </section>
+</div>
+
+<script>
+/*** Question bank (patched) ***/
+const BANK = [
+  {id:"QX_FIX", domain:"File Management", difficulty:2, type:"single",
+    stem:"A developer has been unable to remove a particular data folder that a team no longer uses. The developer escalated the issue to the systems administrator. After investigation, the administrator discovered that the folder has the immutable attribute set, preventing its removal. Which of the following commands can be used to resolve this issue?",
+    choices:["chgrp -R 755 data/","chmod -R 777 data/","chattr -R -i data/","chown -R data/"],
+    answer:[2],
+    explanation:"<b>Correct:</b> <code>chattr -R -i data/</code> removes the immutable flag so files can be deleted.<br><b>Incorrect:</b> <code>chmod</code> and <code>chgrp</code> change permissions/groups; <code>chown</code> changes ownership—none override immutability.<br><i>Reference: man 1 chattr; XK0-005 Obj 2.2</i>"
+  },
+  {id:"QX_NOOUTPUT1", domain:"User Management", difficulty:2, type:"single",
+    stem:"A user was unable to log in to the Linux system. Investigation revealed the account’s shell was set to /bin/false, which prevents login. Which of the following commands will resolve the issue?",
+    choices:["usermod -s /bin/bash joe","pam_tally2 -u joe -r","passwd -u joe","chage -E 90 joe"],
+    answer:[0],
+    explanation:"<b>Correct:</b> <code>usermod -s /bin/bash joe</code> assigns a valid shell.<br><b>Incorrect:</b> <code>pam_tally2</code> clears fail counts, <code>passwd -u</code> unlocks, <code>chage -E</code> sets expiration—none fix an invalid shell.<br><i>Reference: man 8 usermod; man 8 pam_tally2; XK0-005 Obj 1.1</i>"
+  },
+  {id:"QX_NOOUTPUT2", domain:"Storage", difficulty:2, type:"single",
+    stem:"Users are unable to create new files on the company’s FTP server. Investigation shows the filesystem has no free inodes, which prevents new file creation even if space is available. Which of the following is the cause?",
+    choices:["Incorrect permissions","Filesystem out of space","Filesystem out of inodes","Filesystem mounted read-only"],
+    answer:[2],
+    explanation:"<b>Correct:</b> Out of inodes prevents new files regardless of free disk space.<br><b>Incorrect:</b> permissions/space/ro-state don’t match the described condition.<br><i>Reference: man 1 df; man 8 tune2fs; XK0-005 Obj 2.1</i>"
+  },
+  {id:"QX_NOOUTPUT3", domain:"Networking", difficulty:2, type:"single",
+    stem:"A systems administrator notices that a Linux server cannot reach other servers on the subnet. The NIC shows the NO-CARRIER flag. Which is the most probable cause?",
+    choices:["Invalid MAC address","Incorrect broadcast address","Old kernel module","Cable is unplugged or switch disconnected"],
+    answer:[3],
+    explanation:"<b>Correct:</b> NO-CARRIER means no link detected—typically a cable/switch issue.<br><b>Incorrect:</b> MAC/broadcast misconfigs would not show NO-CARRIER; driver issues usually present differently.<br><i>Reference: ip-link(8); dmesg(1); XK0-005 Obj 3.3</i>"
+  }
+];
+
+/*** Domain filters ***/
+let SELECTED_DOMAINS = new Set();
+function uniqueDomains(){ return [...new Set(BANK.map(q=>q.domain))].sort(); }
+function renderDomainFilter(){
+  const box = document.getElementById('domainFilter'); if (!box) return; box.innerHTML='';
+  uniqueDomains().forEach(dom=>{
+    const id = `dom_${dom.replace(/[^A-Za-z0-9]+/g,'_')}`;
+    const label = document.createElement('label');
+    label.className='pill'; label.style.cursor='pointer';
+    label.innerHTML = `<input type="checkbox" id="${id}" onchange="toggleDomain('${dom}', this.checked)"> [${dom}]`;
+    box.appendChild(label);
+  });
+}
+function toggleDomain(dom,on){ if(on) SELECTED_DOMAINS.add(dom); else SELECTED_DOMAINS.delete(dom); }
+function selectAllDomains(){ SELECTED_DOMAINS = new Set(uniqueDomains());
+  uniqueDomains().forEach(dom=>{ const id=`dom_${dom.replace(/[^A-Za-z0-9]+/g,'_')}`; const el=document.getElementById(id); if(el) el.checked=true; });
+}
+function clearDomains(){ SELECTED_DOMAINS.clear();
+  document.querySelectorAll('#domainFilter input[type=checkbox]').forEach(cb=>cb.checked=false);
+}
+function toggleShuffle(){ const el=document.getElementById('shuffleToggle'); el.textContent = (el.textContent==='ON'?'OFF':'ON'); }
+
+/*** Core quiz state ***/
+let QUIZ_POOL=[], CUR=0, SCORE=0;
+let START_TS=null, TIME_LIMIT_S=0, TIMER=null;
+let MISSED=[];
+
+function shuffle(a){ const b=[...a]; for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];} return b; }
+
+function startExam(mode){
+  // Build pool
+  let pool = BANK.filter(q => SELECTED_DOMAINS.size? SELECTED_DOMAINS.has(q.domain):true);
+  const shuffleOn = document.getElementById('shuffleToggle').textContent==='ON';
+  if (shuffleOn) pool = shuffle(pool);
+  if (mode==='90' && pool.length>90) pool = pool.slice(0,90);
+  QUIZ_POOL = pool;
+  CUR=0; SCORE=0; MISSED=[];
+
+  // Timer
+  const mins = parseInt(document.getElementById('minutes').value||'90',10);
+  TIME_LIMIT_S = (mode==='practice') ? 0 : Math.max(0, mins*60);
+  START_TS = Date.now();
+  if (TIMER) clearInterval(TIMER);
+  if (TIME_LIMIT_S>0){
+    TIMER = setInterval(()=>{
+      const elapsed = Math.floor((Date.now()-START_TS)/1000);
+      const left = Math.max(0, TIME_LIMIT_S - elapsed);
+      document.getElementById('timeLeft').textContent = fmtMMSS(left);
+      if (left<=0){ clearInterval(TIMER); finishExam(); }
+    }, 250);
+  } else {
+    document.getElementById('timeLeft').textContent = '--:--';
+  }
+
+  document.getElementById('qTotal').textContent = QUIZ_POOL.length;
+  document.getElementById('screenStart').classList.add('hidden');
+  document.getElementById('screenExam').classList.remove('hidden');
+  renderNav(); renderQ();
+}
+
+function fmtMMSS(s){ const m=Math.floor(s/60), ss=(s%60).toString().padStart(2,'0'); return `${m}:${ss}`; }
+
+function renderQ(){
+  const q = QUIZ_POOL[CUR];
+  const box = document.getElementById('qContainer');
+  document.getElementById('qNum').textContent = CUR+1;
+  document.getElementById('progress').style.width = `${((CUR)/Math.max(1,QUIZ_POOL.length))*100}%`;
+  const opts = q.choices.map((c,i)=>`<label class="opt"><input type="radio" name="ans" value="${i}"> <span>${c}</span></label>`).join('');
+  box.innerHTML = `
+    <div class="pill" style="margin-bottom:8px">Tag: <b>[${q.domain}]</b></div>
+    <div class="qstem">${q.stem}</div>
+    <div class="answers">${opts}</div>
+    <div id="exp" class="explain hidden"></div>`;
+  // highlight nav
+  document.querySelectorAll('#navGrid .btn').forEach((b,i)=>{ b.classList.toggle('good', i===CUR); });
+}
+
+function renderNav(){
+  const grid = document.getElementById('navGrid'); grid.innerHTML='';
+  QUIZ_POOL.forEach((q,i)=>{
+    const b=document.createElement('button'); b.className='btn'; b.textContent=(i+1);
+    b.onclick=()=>{ CUR=i; renderQ(); };
+    grid.appendChild(b);
+  });
+}
+
+function prevQ(){ if (CUR>0){CUR--; renderQ();} }
+function nextQ(){ if (CUR<QUIZ_POOL.length-1){CUR++; renderQ();} }
+
+function checkAnswer(){
+  const picked = [...document.querySelectorAll('input[name=ans]')].find(x=>x.checked);
+  const exp = document.getElementById('exp');
+  if (!picked){ exp.classList.remove('hidden'); exp.textContent = 'Pick an option first.'; return; }
+  const q = QUIZ_POOL[CUR];
+  const ok = q.answer.includes(parseInt(picked.value,10));
+  if (ok) { SCORE++; }
+  else { MISSED.push(q); }
+  document.getElementById('scoreLive').textContent = Math.round((SCORE/(CUR+1))*100);
+  exp.classList.remove('hidden');
+  exp.innerHTML = q.explanation;
+}
+
+function finishExam(){
+  if (TIMER){ clearInterval(TIMER); TIMER=null; }
+  document.getElementById('screenExam').classList.add('hidden');
+  document.getElementById('screenResults').classList.remove('hidden');
+  const total = QUIZ_POOL.length;
+  const correct = SCORE;
+  const incorrect = total - correct;
+  const elapsed = START_TS ? Math.floor((Date.now()-START_TS)/1000) : 0;
+  document.getElementById('resScore').textContent = Math.round((correct/Math.max(1,total))*100) + '%';
+  document.getElementById('resCorrect').textContent = correct;
+  document.getElementById('resIncorrect').textContent = incorrect;
+  document.getElementById('resTime').textContent = fmtMMSS(elapsed);
+  // Build review
+  const review = document.getElementById('reviewList');
+  if (MISSED.length===0){ review.innerHTML = '<div class="muted">No misses. Nice.</div>'; return; }
+  review.innerHTML = MISSED.map((q,idx)=>{
+    const correctText = q.answer.map(i=>q.choices[i]).join(', ');
+    return `<div class="card pad" style="margin:10px 0">
+      <div class="small pill" style="margin-bottom:6px">[${q.domain}]</div>
+      <div class="qstem">${idx+1}. ${q.stem}</div>
+      <div class="muted small">Correct: ${correctText}</div>
+      <div class="explain" style="margin-top:8px">${q.explanation}</div>
+    </div>`;
+  }).join('');
+}
+
+function restart(){
+  document.getElementById('screenResults').classList.add('hidden');
+  document.getElementById('screenStart').classList.remove('hidden');
+}
+
+function backToStart(){ restart(); }
+
+// init
+renderDomainFilter();
+</script>
+</body>
+</html>
